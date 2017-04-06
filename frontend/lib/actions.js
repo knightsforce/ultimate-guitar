@@ -1,7 +1,7 @@
 import flags from "../lib/flags";
 
 let groups = {
-	nirvana: "nirvana",
+	metallica: "metallica",
 }
 let nameGroup = groups.nirvana;
 let query = `http://musicbrainz.org/ws/2/release-group/?query=${nameGroup}&fmt=json`;

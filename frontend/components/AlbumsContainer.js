@@ -12,7 +12,7 @@ export default class AlbumsContainer extends Component {
     let storeAlbums = props.storeAlbums;
     return (
       <div className={props.className}>
-        <HeadContainer className="head" nameArtist="Имя" />
+        <HeadContainer className="head" nameArtist="Результат Поиска" />
         <listAlbum className="listAlbum"/>
       </div>
     );
@@ -20,18 +20,17 @@ export default class AlbumsContainer extends Component {
 }
 //Проверить с маленькой буквы
 function HeadContainer(props) {//функция - т.к. нчиего сложного не делает
+  //props.countAlbums - это не count, а ralese-group
   return(
     <div className={props.className}>
-      <div>{props.nameArtist}</div>
+      <div className="name">{props.nameArtist}</div>
       <div className="countAlbums">
-        <span></span>
+        <span>count of all albums</span>
+        <span className="value">{props.countAlbums}</span>
       </div>
     </div>
   );
 }
-
-
-
 
 class listAlbum extends Component {
   constructor(props) {
@@ -55,6 +54,7 @@ class Album extends Component {
   }
   render() {
     let props = this.props;
+    let data = "";
     return (
       <div className="album">
         <BasicInformation />

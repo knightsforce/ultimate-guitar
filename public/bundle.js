@@ -11328,7 +11328,7 @@ var _flags2 = _interopRequireDefault(_flags);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var groups = {
-	nirvana: "nirvana"
+	metallica: "metallica"
 };
 var nameGroup = groups.nirvana;
 var query = "http://musicbrainz.org/ws/2/release-group/?query=" + nameGroup + "&fmt=json";
@@ -26120,7 +26120,7 @@ var AlbumsContainer = function (_Component) {
       return _react2.default.createElement(
         'div',
         { className: props.className },
-        _react2.default.createElement(HeadContainer, { className: 'head', nameArtist: '\u0418\u043C\u044F' }),
+        _react2.default.createElement(HeadContainer, { className: 'head', nameArtist: '\u0420\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442 \u041F\u043E\u0438\u0441\u043A\u0430' }),
         _react2.default.createElement('listAlbum', { className: 'listAlbum' })
       );
     }
@@ -26133,18 +26133,28 @@ var AlbumsContainer = function (_Component) {
 exports.default = AlbumsContainer;
 function HeadContainer(props) {
   //функция - т.к. нчиего сложного не делает
+  //props.countAlbums - это не count, а ralese-group
   return _react2.default.createElement(
     'div',
     { className: props.className },
     _react2.default.createElement(
       'div',
-      null,
+      { className: 'name' },
       props.nameArtist
     ),
     _react2.default.createElement(
       'div',
       { className: 'countAlbums' },
-      _react2.default.createElement('span', null)
+      _react2.default.createElement(
+        'span',
+        null,
+        'count of all albums'
+      ),
+      _react2.default.createElement(
+        'span',
+        { className: 'value' },
+        props.countAlbums
+      )
     )
   );
 }
@@ -26191,6 +26201,7 @@ var Album = function (_Component3) {
     key: 'render',
     value: function render() {
       var props = this.props;
+      var data = "";
       return _react2.default.createElement(
         'div',
         { className: 'album' },
