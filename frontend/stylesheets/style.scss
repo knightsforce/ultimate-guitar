@@ -10,36 +10,43 @@ body {
 	height: 100%;
 }
 
-#albumsContainer {
-	#head {
+.albumsContainer {
+	.head {
 
 	}
-	#listAlbum {
+	.listAlbum {
 		//border: 1px solid red;
 		.album {
 			width: 100%;
-			.basic {
+			.basic-information {
 				display: flex;
 				flex-direction: flow;
+				justify-content: space-between;
 				padding: 10px 5px;
 				.name {
 					margin-right: 10px;
+					
 				}
-				.showDetails {
-					background: url(../images/icons/checkAdd.png) no-repeat;
-					transform: rotate(180deg);
-					&.complete {
-						transform: rotate(-90deg); 
+				.buttons-block {
+					display: flex;
+					flex-direction: flow;
+					justify-content: flex-start;
+					.show-details {
+						background: url(../images/icons/checkAdd.png) no-repeat;
+						transform: rotate(180deg);
+						&.complete {
+							transform: rotate(-90deg); 
+						}
 					}
-				}
-				.add {
-					background: url(../images/icons/checkAdd.png) no-repeat;
-					&.complete {
-						background: url(../images/icons/checkAdded.png) no-repeat;
+					.add-album {
+						background: url(../images/icons/checkAdd.png) no-repeat;
+						&.complete {
+							background: url(../images/icons/checkAdded.png) no-repeat;
+						}
 					}
-				}
-				.delete {
-					background: url(../images/icons/cross.png) no-repeat;
+					.delete-album {
+						background: url(../images/icons/cross.png) no-repeat;
+					}
 				}
 			}
 			.detals {

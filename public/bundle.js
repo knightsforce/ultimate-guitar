@@ -11213,6 +11213,10 @@ var _reduxThunk = __webpack_require__(597);
 
 var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
+var _AlbumsContainer = __webpack_require__(616);
+
+var _AlbumsContainer2 = _interopRequireDefault(_AlbumsContainer);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -11233,7 +11237,12 @@ var App = function (_Component) {
   (0, _createClass3.default)(App, [{
     key: 'render',
     value: function render() {
-      return _react2.default.createElement('div', { className: 'App' });
+      console.log(this.props.store);
+      return _react2.default.createElement(
+        'div',
+        { className: 'App' },
+        _react2.default.createElement(_AlbumsContainer2.default, { className: 'albumsContainer', storeAlbums: this.props.store.albums })
+      );
     }
   }]);
   return App;
@@ -26032,6 +26041,225 @@ module.exports = function(module) {
 	return module;
 };
 
+
+/***/ }),
+/* 605 */,
+/* 606 */,
+/* 607 */,
+/* 608 */,
+/* 609 */,
+/* 610 */,
+/* 611 */,
+/* 612 */,
+/* 613 */,
+/* 614 */,
+/* 615 */,
+/* 616 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _getPrototypeOf = __webpack_require__(259);
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = __webpack_require__(263);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = __webpack_require__(264);
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = __webpack_require__(266);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(265);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _react = __webpack_require__(74);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _actions = __webpack_require__(254);
+
+var actions = _interopRequireWildcard(_actions);
+
+var _flags = __webpack_require__(107);
+
+var _flags2 = _interopRequireDefault(_flags);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var AlbumsContainer = function (_Component) {
+  (0, _inherits3.default)(AlbumsContainer, _Component);
+
+  function AlbumsContainer(props) {
+    (0, _classCallCheck3.default)(this, AlbumsContainer);
+
+    var _this = (0, _possibleConstructorReturn3.default)(this, (AlbumsContainer.__proto__ || (0, _getPrototypeOf2.default)(AlbumsContainer)).call(this, props));
+
+    _this.props = props;
+    return _this;
+  }
+
+  (0, _createClass3.default)(AlbumsContainer, [{
+    key: 'render',
+    value: function render() {
+      var props = this.props;
+      var storeAlbums = props.storeAlbums;
+      return _react2.default.createElement(
+        'div',
+        { className: props.className },
+        _react2.default.createElement(HeadContainer, { className: 'head', nameArtist: '\u0418\u043C\u044F' }),
+        _react2.default.createElement('listAlbum', { className: 'listAlbum' })
+      );
+    }
+  }]);
+  return AlbumsContainer;
+}(_react.Component);
+//Проверить с маленькой буквы
+
+
+exports.default = AlbumsContainer;
+function HeadContainer(props) {
+  //функция - т.к. нчиего сложного не делает
+  return _react2.default.createElement(
+    'div',
+    { className: props.className },
+    _react2.default.createElement(
+      'div',
+      null,
+      props.nameArtist
+    ),
+    _react2.default.createElement(
+      'div',
+      { className: 'countAlbums' },
+      _react2.default.createElement('span', null)
+    )
+  );
+}
+
+var listAlbum = function (_Component2) {
+  (0, _inherits3.default)(listAlbum, _Component2);
+
+  function listAlbum(props) {
+    (0, _classCallCheck3.default)(this, listAlbum);
+
+    var _this2 = (0, _possibleConstructorReturn3.default)(this, (listAlbum.__proto__ || (0, _getPrototypeOf2.default)(listAlbum)).call(this, props));
+
+    _this2.props = props;
+    return _this2;
+  }
+
+  (0, _createClass3.default)(listAlbum, [{
+    key: 'render',
+    value: function render() {
+      var props = this.props;
+      return _react2.default.createElement(
+        'div',
+        { className: props.className },
+        _react2.default.createElement(Album, null)
+      );
+    }
+  }]);
+  return listAlbum;
+}(_react.Component);
+
+var Album = function (_Component3) {
+  (0, _inherits3.default)(Album, _Component3);
+
+  function Album(props) {
+    (0, _classCallCheck3.default)(this, Album);
+
+    var _this3 = (0, _possibleConstructorReturn3.default)(this, (Album.__proto__ || (0, _getPrototypeOf2.default)(Album)).call(this, props));
+
+    _this3.props = props;
+    return _this3;
+  }
+
+  (0, _createClass3.default)(Album, [{
+    key: 'render',
+    value: function render() {
+      var props = this.props;
+      return _react2.default.createElement(
+        'div',
+        { className: 'album' },
+        _react2.default.createElement(BasicInformation, null),
+        _react2.default.createElement(AlbumDetals, null)
+      );
+    }
+  }]);
+  return Album;
+}(_react.Component);
+
+var BasicInformation = function (_Component4) {
+  (0, _inherits3.default)(BasicInformation, _Component4);
+
+  function BasicInformation(props) {
+    (0, _classCallCheck3.default)(this, BasicInformation);
+
+    var _this4 = (0, _possibleConstructorReturn3.default)(this, (BasicInformation.__proto__ || (0, _getPrototypeOf2.default)(BasicInformation)).call(this, props));
+
+    _this4.props = props;
+    return _this4;
+  }
+
+  (0, _createClass3.default)(BasicInformation, [{
+    key: 'render',
+    value: function render() {
+      var props = this.props;
+      return _react2.default.createElement(
+        'div',
+        { className: 'basic-information' },
+        _react2.default.createElement(
+          'div',
+          { className: 'name-album' },
+          props.name
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'buttons-block' },
+          _react2.default.createElement('button', { type: 'button', className: 'show-details' }),
+          _react2.default.createElement('button', { type: 'button', className: 'add-album' }),
+          _react2.default.createElement('button', { type: 'button', className: 'delete-album' })
+        )
+      );
+    }
+  }]);
+  return BasicInformation;
+}(_react.Component);
+
+var AlbumDetals = function (_Component5) {
+  (0, _inherits3.default)(AlbumDetals, _Component5);
+
+  function AlbumDetals(props) {
+    (0, _classCallCheck3.default)(this, AlbumDetals);
+
+    var _this5 = (0, _possibleConstructorReturn3.default)(this, (AlbumDetals.__proto__ || (0, _getPrototypeOf2.default)(AlbumDetals)).call(this, props));
+
+    _this5.props = props;
+    return _this5;
+  }
+
+  (0, _createClass3.default)(AlbumDetals, [{
+    key: 'render',
+    value: function render() {
+      var props = this.props;
+      return _react2.default.createElement('div', { className: 'detals' });
+    }
+  }]);
+  return AlbumDetals;
+}(_react.Component);
 
 /***/ })
 /******/ ]);

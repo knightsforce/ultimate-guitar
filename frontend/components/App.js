@@ -5,16 +5,19 @@ import rootReducer from '../lib/reducers';
 import * as actions from '../lib/actions';
 import flags from "../lib/flags";
 import thunk from 'redux-thunk';
+import AlbumsContainer from "./AlbumsContainer";
 //alert(actions.getAlbum);
 //import './App.css';
 
 const store = createStore(rootReducer, {}, applyMiddleware(thunk));
 
 class App extends Component {
+
   render() {
+  	console.log(this.props.store)
     return (
       <div className="App">
-      
+      	<AlbumsContainer className="albumsContainer" storeAlbums={this.props.store.albums}/>
       </div>
     );
   }
