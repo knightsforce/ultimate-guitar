@@ -6,6 +6,7 @@ import * as actions from '../lib/actions';
 import flags from "../lib/flags";
 import thunk from 'redux-thunk';
 import AlbumsContainer from "./AlbumsContainer";
+import SearchField from "./SearchField";
 //alert(actions.getAlbum);
 //import './App.css';
 
@@ -14,10 +15,11 @@ const store = createStore(rootReducer, {}, applyMiddleware(thunk));
 class App extends Component {
 
   render() {
-  	console.log(this.props.store)
+	let props = this.props;
     return (
       <div className="App">
       	<AlbumsContainer className="albumsContainer" storeAlbums={this.props.store.albums}/>
+      	<SearchField queryAlbums={props.queryAlbums}/>
       </div>
     );
   }
@@ -33,7 +35,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
 	return {
-		getAlbums: ()=>{dispatch(actions.queryAlbums())},
+		queryAlbums: ()=>{dispatch(actions.queryAlbums())},
 	};
 }
 
