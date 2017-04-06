@@ -1,0 +1,50 @@
+﻿
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	width: 100%;
+	height: 100%;
+}
+
+#albumsContainer {
+	#head {
+
+	}
+	#listAlbum {
+		//border: 1px solid red;
+		.album {
+			width: 100%;
+			.basic {
+				display: flex;
+				flex-direction: flow;
+				padding: 10px 5px;
+				.name {
+					margin-right: 10px;
+				}
+				.showDetails {
+					background: url(../images/icons/checkAdd.png) no-repeat;
+					transform: rotate(180deg);
+					&.complete {
+						transform: rotate(-90deg); 
+					}
+				}
+				.add {
+					background: url(../images/icons/checkAdd.png) no-repeat;
+					&.complete {
+						background: url(../images/icons/checkAdded.png) no-repeat;
+					}
+				}
+				.delete {
+					background: url(../images/icons/cross.png) no-repeat;
+				}
+			}
+			.detals {
+
+			}
+		}
+	}
+}

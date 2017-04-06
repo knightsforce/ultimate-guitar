@@ -1,0 +1,29 @@
+* {
+  margin: 0;
+  padding: 0; }
+
+body {
+  width: 100%;
+  height: 100%; }
+
+#albumsContainer #listAlbum .album {
+  width: 100%; }
+  #albumsContainer #listAlbum .album .basic {
+    display: flex;
+    flex-direction: flow;
+    padding: 10px 5px; }
+    #albumsContainer #listAlbum .album .basic .name {
+      margin-right: 10px; }
+    #albumsContainer #listAlbum .album .basic .showDetails {
+      background: url(/public/images/icons/checkAdd.png) no-repeat;
+      transform: rotate(180deg); }
+      #albumsContainer #listAlbum .album .basic .showDetails.complete {
+        transform: rotate(-90deg); }
+    #albumsContainer #listAlbum .album .basic .add {
+      background: url(/public/images/icons/checkAdd.png) no-repeat; }
+      #albumsContainer #listAlbum .album .basic .add.complete {
+        background: url(/public/images/icons/checkAdded.png) no-repeat; }
+    #albumsContainer #listAlbum .album .basic .delete {
+      background: url(/public/images/icons/cross.png) no-repeat; }
+
+/*# sourceMappingURL=style.css.map*/
