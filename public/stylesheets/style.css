@@ -106,5 +106,9 @@ body {
                 background: url(../images/icons/checkAdded.png) no-repeat; }
             .App .albumsContainer .listAlbum .album .basic-information .buttons-block .delete-album {
               background: url(../images/icons/cross.png) no-repeat; }
+        .App .albumsContainer .listAlbum .album .detals ul {
+          list-style: none; }
+          .App .albumsContainer .listAlbum .album .detals ul li {
+            border-bottom: 1px solid black; }
 
 /*# sourceMappingURL=style.css.map*/

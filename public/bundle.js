@@ -4955,22 +4955,18 @@ function queryAlbums(text) {
 			crossDomain: true,
 			beforeSend: function beforeSend() {
 				dispatch(albumsAction(_flags2.default.albums.getInit, {}));
-				alert(1);
 			}, //отрисовка загрузки
 			complete: function complete(data) {
 				//dispatch(flags.albums.getComplete);
 			}, //Убрать отрисовку загрузки
 			success: function success(data) {
 				dispatch(albumsAction(_flags2.default.albums.getSucc, data));
-				alert(2);
 			}, //Пробросить данные
 			error: function error() {
 				dispatch(albumsAction(_flags2.default.albums.getErr, {}));
-				alert(3);
 			}, //выдать ошибку
 
-			cache: false,
-			headers: { "Content-Type": "application/json" }
+			cache: false
 		});
 		/*new Promise((resolve, reject) => {
   
@@ -11610,7 +11606,6 @@ var AlbumsContainer = function (_Component) {
     value: function render() {
       var props = this.props;
       var storeAlbums = props.storeAlbums;
-
       var visibleElements = null;
       switch (storeAlbums.status) {
         case _flags.statuses.load:
@@ -11618,7 +11613,7 @@ var AlbumsContainer = function (_Component) {
           break;
 
         case _flags.statuses.succ:
-          var albums = dataAlbums.data["release-groups"].map(function (item, i) {
+          var albums = storeAlbums.data["release-groups"].map(function (item, i) {
             return _react2.default.createElement(Album, { key: item.id, data: item });
           });
           visibleElements = [_react2.default.createElement(HeadContainer, { className: 'head', nameArtist: '\u0420\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u044B \u043F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443' }), _react2.default.createElement(
@@ -12046,9 +12041,7 @@ function albums() {
 		case _flags2.default.albums.getSucc:
 
 		case _flags2.default.albums.getErr:
-
-			console.log("-------", action.payload);
-			return (0, _assign2.default)({}, action.payload, state);
+			return (0, _assign2.default)({}, state, action.payload);
 
 		default:
 			return state;

@@ -14,22 +14,18 @@ function queryAlbums(text) {
 			crossDomain: true,
 			beforeSend: ()=>{
 				dispatch(albumsAction(flags.albums.getInit, {}));
-				alert(1)
 			},//отрисовка загрузки
 			complete: (data)=>{
 				//dispatch(flags.albums.getComplete);
 			},//Убрать отрисовку загрузки
 			success: (data)=>{
 				dispatch(albumsAction(flags.albums.getSucc, data));
-				alert(2)
 			},//Пробросить данные
 			error: ()=>{
 				dispatch(albumsAction(flags.albums.getErr, {}));
-				alert(3)
 			},//выдать ошибку
 
 			cache: false,
-			headers: {"Content-Type": "application/json"},
 		});
 		/*new Promise((resolve, reject) => {
 

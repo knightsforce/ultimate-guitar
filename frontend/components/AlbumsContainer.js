@@ -10,7 +10,6 @@ export default class AlbumsContainer extends Component {
   render() {
     let props = this.props;
     let storeAlbums = props.storeAlbums;
-
     let visibleElements = null;
     switch(storeAlbums.status) {
       case statuses.load:
@@ -18,7 +17,7 @@ export default class AlbumsContainer extends Component {
         break;
 
       case statuses.succ:
-        let albums = dataAlbums.data["release-groups"].map((item, i)=>{
+        let albums = storeAlbums.data["release-groups"].map((item, i)=>{
           return (<Album key={item.id} data={item}/>)
         });
         visibleElements=[

@@ -27,9 +27,7 @@ function albums(state={}, action) {
 		case flags.albums.getSucc:
 			
 		case flags.albums.getErr:
-
-		console.log("-------", action.payload)
-			return Object.assign({}, action.payload, state);
+			return Object.assign({}, state, action.payload);
 
 		default:
 			return state;
