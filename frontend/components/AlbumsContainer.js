@@ -12,7 +12,7 @@ export default class AlbumsContainer extends Component {
     let storeAlbums = props.storeAlbums;
     return (
       <div className={props.className}>
-        <HeadContainer className="head" nameArtist="Результат Поиска" />
+        <HeadContainer className="head" nameArtist="Результаты по запросу" />
         <listAlbum className="listAlbum"/>
       </div>
     );
@@ -23,10 +23,10 @@ function HeadContainer(props) {//функция - т.к. нчиего сложн
   //props.countAlbums - это не count, а ralese-group
   return(
     <div className={props.className}>
-      <div className="name">{props.nameArtist}</div>
+      <div className="name">{props.nameArtist}<span>{props.searchResult || " Название"}</span></div>
       <div className="countAlbums">
         <span>count of all albums</span>
-        <span className="value">{props.countAlbums}</span>
+        <span className="value">{props.countAlbums || "none"}</span>
       </div>
     </div>
   );

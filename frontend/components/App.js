@@ -18,8 +18,8 @@ class App extends Component {
 	let props = this.props;
     return (
       <div className="App">
+    	<SearchField queryAlbums={props.queryAlbums}/>
       	<AlbumsContainer className="albumsContainer" storeAlbums={this.props.store.albums}/>
-      	<SearchField queryAlbums={props.queryAlbums}/>
       </div>
     );
   }

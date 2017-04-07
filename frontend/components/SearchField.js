@@ -12,6 +12,7 @@ export default class SearchField extends Component {
 
   handleInput(e) {
     this.value=e.target.value;
+    console.log(e.metaKey, this.value);
   }
 
   handleClick(e) {
@@ -23,7 +24,7 @@ export default class SearchField extends Component {
     return (
       <div className="search-field">
         <div className="search-input">
-          <input onChange={this.handleInput} placeholder="Введите название"/>
+          <input onKeyPress={this.handleInput} placeholder="Введите название"/>
         </div>
         <div className="button-search" onClick={this.handleClick}></div>
         

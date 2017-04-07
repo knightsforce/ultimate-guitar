@@ -19,7 +19,7 @@ module.exports = {
 	output: {
 		path: path.join(__dirname, 'public'),
 		filename: '[name].js',
-		publicPath: '/public/',
+		publicPath: '../', //В production можно /public/ для обращеня к серверу
 		//library: '[name]'
 	},
 	
@@ -55,14 +55,25 @@ module.exports = {
             //use: ["css-loader", "autoprefixer-loader", "sass-loader"],
             test: /\.scss$/,
             use: extractSass.extract({
-                use: [{
+                use: [
+                {
                     loader: "css-loader"
-                }, {
-                    loader: "sass-loader"
+                },
+                /*{
+                    loader: "resolve-url-loader",
+                }, */
+                {
+                    loader: "sass-loader",
+
+
+                    options: {
+            			includePaths: [path.resolve(__dirname, "./")],
+            			//sourceMap: true,
+            		},
                 }],
                 // use style-loader in development
                 fallback: "style-loader"
-            })
+            }),
 	    },
 	    /*{
 	    	test: /\.css$/,
@@ -81,6 +92,10 @@ module.exports = {
 	    			use: ["css-loader","autoprefixer-loader?browsers=last 2 versions","less-loader"],
 	    		}),
 			//loader: "style!css!autoprefixer?browsers=last 2 versions!less",//resolve url по умолчанию
+	    },*/
+	    /*{
+	    	test: /\.(png|jpg|svg|ttf|eot|woff|woff2)$/,
+			use: "url-loader?limit=1",
 	    },*/
 	    {
 	    	test: /\.(png|jpg|svg|ttf|eot|woff|woff2)$/,
