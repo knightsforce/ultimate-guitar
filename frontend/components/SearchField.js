@@ -12,11 +12,13 @@ export default class SearchField extends Component {
 
   handleInput(e) {
     this.value=e.target.value;
-    console.log(e.metaKey, this.value);
+    if(e.key=="Enter") {
+      this.props.queryAlbums(this.value);
+    }
   }
 
   handleClick(e) {
-    this.props.queryAlbums();
+    this.props.queryAlbums(this.value);
   }
 
   render() {

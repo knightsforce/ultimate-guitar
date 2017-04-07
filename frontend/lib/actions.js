@@ -1,22 +1,33 @@
-import flags from "../lib/flags";
+import flags, {statuses} from "../lib/flags";
 
 let groups = {
 	metallica: "metallica",
 }
 let nameGroup = groups.nirvana;
-let query = `http://musicbrainz.org/ws/2/release-group/?query=${nameGroup}&fmt=json`;
 
-function queryAlbums() {
+
+
+function queryAlbums(text) {
+
 	return (dispatch)=>{
-		$.ajax(query, {
-			type: "GET",
-			beforeSend: ()=>{dispatch(flags.albums.getInit)},//отрисовка загрузки
-			complete: (data)=>{dispatch(flags.albums.getComplete)},//Убрать отрисовку загрузки
-			susses: (data)=>{
-				alert(data);
-				dispatch(flags.albums.getSus, data.responseText);
+		$.ajax(createQuery(text), {
+			crossDomain: true,
+			beforeSend: ()=>{
+				dispatch(albumsAction(flags.albums.getInit, {}));
+				alert(1)
+			},//отрисовка загрузки
+			complete: (data)=>{
+				//dispatch(flags.albums.getComplete);
+			},//Убрать отрисовку загрузки
+			success: (data)=>{
+				dispatch(albumsAction(flags.albums.getSucc, data));
+				alert(2)
 			},//Пробросить данные
-			error: ()=>{dispatch(flags.albums.getErr)},//ыдать ошибку
+			error: ()=>{
+				dispatch(albumsAction(flags.albums.getErr, {}));
+				alert(3)
+			},//выдать ошибку
+
 			cache: false,
 			headers: {"Content-Type": "application/json"},
 		});
@@ -31,25 +42,52 @@ function queryAlbums() {
 		});*/
 	}
 }
-
-function getAlbums(flag) {
-/*
-	{
-		get: "",
-		getSus: "",
-		getErr: "",	
+function albumsAction(flag, data) {
+	let status = null;
+	switch(flag) {
+		case flags.albums.getInit:
+			status = statuses.load;
+			break;
+		case flags.albums.getSucc:
+			status = statuses.succ;
+			break;
+		case flags.albums.getErr:
+			status = statuses.err;
+			break;
 	}
-*/
-	return {type: flag, payload: "loading"};
-	
+	return {
+			type: flag,
+			payload: {
+				status: status, 
+				data: data,
+				}
+			};
 }
 
-function getSusAlbums(flag, data) {
-	return {type: flag, payload: data};
+
+export {queryAlbums};
+
+//------------------Рабочие функции
+
+function createQuery(text) {
+	return `http://musicbrainz.org/ws/2/release-group/?query=${text}&fmt=json`;
 }
 
-function getErrAlbums(flag) {
-	return {type: flag};
-}
+/*function parseData(jsonObj) {
+	let list=jsonObj["release-groups"].map((item, i)=>{
+		return {
+			id: item.id,
+			title: item.title,
+		}
+	});
 
-export {getAlbums, getSusAlbums};
+
+	var obj = {
+		count: jsonObj.count,
+		list: list,
+		artist: {
+
+		}
+	}
+	return obj;
+}*/

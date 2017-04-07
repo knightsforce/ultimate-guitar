@@ -3124,20 +3124,26 @@ Object.defineProperty(exports, "__esModule", {
 var flags = {
 	albums: {
 		getInit: "GET_INIT",
-		getComplete: "GET_COMPLETE",
-		getSus: "GET_SUCCESSFUL",
+		//getComplete: "GET_COMPLETE",
+		getSucc: "GET_SUCCESSFUL",
 		getErr: "GET_ERROR",
 
 		create: "CREATE_ALBUM",
-		createSus: "CREATED_ALBUM",
+		createSucc: "CREATED_ALBUM",
 		createErr: "CREATED_ERROR",
 
 		save: "SAVE_ALBUM",
-		saveSus: "SAVE_ALBUM_COMPLITE",
+		saveSucc: "SAVE_ALBUM_COMPLITE",
 		saveErr: "SAVE_ALBUM_ERROR"
 	}
 };
 
+var statuses = {
+	load: "loading",
+	succ: "success",
+	err: "error"
+};
+exports.statuses = statuses;
 exports.default = flags;
 
 /***/ }),
@@ -4929,7 +4935,7 @@ module.exports = setInnerHTML;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.getSusAlbums = exports.getAlbums = undefined;
+exports.queryAlbums = undefined;
 
 var _flags = __webpack_require__(76);
 
@@ -4941,25 +4947,28 @@ var groups = {
 	metallica: "metallica"
 };
 var nameGroup = groups.nirvana;
-var query = "http://musicbrainz.org/ws/2/release-group/?query=" + nameGroup + "&fmt=json";
 
-function queryAlbums() {
+function queryAlbums(text) {
+
 	return function (dispatch) {
-		$.ajax(query, {
-			type: "GET",
+		$.ajax(createQuery(text), {
+			crossDomain: true,
 			beforeSend: function beforeSend() {
-				dispatch(_flags2.default.albums.getInit);
+				dispatch(albumsAction(_flags2.default.albums.getInit, {}));
+				alert(1);
 			}, //отрисовка загрузки
 			complete: function complete(data) {
-				dispatch(_flags2.default.albums.getComplete);
+				//dispatch(flags.albums.getComplete);
 			}, //Убрать отрисовку загрузки
-			susses: function susses(data) {
-				alert(data);
-				dispatch(_flags2.default.albums.getSus, data.responseText);
+			success: function success(data) {
+				dispatch(albumsAction(_flags2.default.albums.getSucc, data));
+				alert(2);
 			}, //Пробросить данные
 			error: function error() {
-				dispatch(_flags2.default.albums.getErr);
-			}, //ыдать ошибку
+				dispatch(albumsAction(_flags2.default.albums.getErr, {}));
+				alert(3);
+			}, //выдать ошибку
+
 			cache: false,
 			headers: { "Content-Type": "application/json" }
 		});
@@ -4971,28 +4980,54 @@ function queryAlbums() {
   		});*/
 	};
 }
-
-function getAlbums(flag) {
-	/*
- 	{
- 		get: "",
- 		getSus: "",
- 		getErr: "",	
- 	}
- */
-	return { type: flag, payload: "loading" };
+function albumsAction(flag, data) {
+	var status = null;
+	switch (flag) {
+		case _flags2.default.albums.getInit:
+			status = _flags.statuses.load;
+			break;
+		case _flags2.default.albums.getSucc:
+			status = _flags.statuses.succ;
+			break;
+		case _flags2.default.albums.getErr:
+			status = _flags.statuses.err;
+			break;
+	}
+	return {
+		type: flag,
+		payload: {
+			status: status,
+			data: data
+		}
+	};
 }
 
-function getSusAlbums(flag, data) {
-	return { type: flag, payload: data };
+exports.queryAlbums = queryAlbums;
+
+//------------------Рабочие функции
+
+function createQuery(text) {
+	return "http://musicbrainz.org/ws/2/release-group/?query=" + text + "&fmt=json";
 }
 
-function getErrAlbums(flag) {
-	return { type: flag };
-}
+/*function parseData(jsonObj) {
+	let list=jsonObj["release-groups"].map((item, i)=>{
+		return {
+			id: item.id,
+			title: item.title,
+		}
+	});
 
-exports.getAlbums = getAlbums;
-exports.getSusAlbums = getSusAlbums;
+
+	var obj = {
+		count: jsonObj.count,
+		list: list,
+		artist: {
+
+		}
+	}
+	return obj;
+}*/
 
 /***/ }),
 /* 109 */
@@ -11356,7 +11391,7 @@ function warning(message) {
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+	value: true
 });
 exports.store = undefined;
 
@@ -11418,42 +11453,48 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 //alert(actions.getAlbum);
 //import './App.css';
+var initState = {
+	albums: {
+		status: "empty",
+		data: {}
+	}
+};
 
-var store = (0, _redux.createStore)(_reducers2.default, {}, (0, _redux.applyMiddleware)(_reduxThunk2.default));
+var store = (0, _redux.createStore)(_reducers2.default, initState, (0, _redux.applyMiddleware)(_reduxThunk2.default));
 
 var App = function (_Component) {
-  (0, _inherits3.default)(App, _Component);
+	(0, _inherits3.default)(App, _Component);
 
-  function App() {
-    (0, _classCallCheck3.default)(this, App);
-    return (0, _possibleConstructorReturn3.default)(this, (App.__proto__ || (0, _getPrototypeOf2.default)(App)).apply(this, arguments));
-  }
+	function App() {
+		(0, _classCallCheck3.default)(this, App);
+		return (0, _possibleConstructorReturn3.default)(this, (App.__proto__ || (0, _getPrototypeOf2.default)(App)).apply(this, arguments));
+	}
 
-  (0, _createClass3.default)(App, [{
-    key: 'render',
-    value: function render() {
-      var props = this.props;
-      return _react2.default.createElement(
-        'div',
-        { className: 'App' },
-        _react2.default.createElement(_SearchField2.default, { queryAlbums: props.queryAlbums }),
-        _react2.default.createElement(_AlbumsContainer2.default, { className: 'albumsContainer', storeAlbums: this.props.store.albums })
-      );
-    }
-  }]);
-  return App;
+	(0, _createClass3.default)(App, [{
+		key: 'render',
+		value: function render() {
+			var props = this.props;
+			return _react2.default.createElement(
+				'div',
+				{ className: 'App' },
+				_react2.default.createElement(_SearchField2.default, { queryAlbums: props.queryAlbums }),
+				_react2.default.createElement(_AlbumsContainer2.default, { className: 'albumsContainer', storeAlbums: this.props.store.albums })
+			);
+		}
+	}]);
+	return App;
 }(_react.Component);
 
 function mapStateToProps(state) {
-  return { store: state };
+	return { store: state };
 }
 
 function mapDispatchToProps(dispatch) {
-  return {
-    queryAlbums: function queryAlbums() {
-      dispatch(actions.queryAlbums());
-    }
-  };
+	return {
+		queryAlbums: function queryAlbums(text) {
+			dispatch(actions.queryAlbums(text));
+		}
+	};
 }
 
 //----------------------------------
@@ -11569,11 +11610,37 @@ var AlbumsContainer = function (_Component) {
     value: function render() {
       var props = this.props;
       var storeAlbums = props.storeAlbums;
+
+      var visibleElements = null;
+      switch (storeAlbums.status) {
+        case _flags.statuses.load:
+          visibleElements = [_react2.default.createElement(AlbumsLoading, null)];
+          break;
+
+        case _flags.statuses.succ:
+          var albums = dataAlbums.data["release-groups"].map(function (item, i) {
+            return _react2.default.createElement(Album, { key: item.id, data: item });
+          });
+          visibleElements = [_react2.default.createElement(HeadContainer, { className: 'head', nameArtist: '\u0420\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u044B \u043F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443' }), _react2.default.createElement(
+            'listAlbum',
+            { className: 'listAlbum', data: true },
+            albums
+          )];
+          break;
+
+        case _flags.statuses.err:
+          visibleElements = [_react2.default.createElement(ErrorLoading, { text: '\u041E\u0448\u0438\u0431\u043A\u0430 \u0437\u0430\u0433\u0440\u0443\u0437\u043A\u0438' })];
+          break;
+
+        default:
+          visibleElements = [];
+          break;
+      }
+
       return _react2.default.createElement(
         'div',
         { className: props.className },
-        _react2.default.createElement(HeadContainer, { className: 'head', nameArtist: '\u0420\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u044B \u043F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443' }),
-        _react2.default.createElement('listAlbum', { className: 'listAlbum' })
+        visibleElements
       );
     }
   }]);
@@ -11632,10 +11699,11 @@ var listAlbum = function (_Component2) {
     key: 'render',
     value: function render() {
       var props = this.props;
+      var list = function list() {};
       return _react2.default.createElement(
         'div',
         { className: props.className },
-        _react2.default.createElement(Album, null)
+        props.children
       );
     }
   }]);
@@ -11658,12 +11726,13 @@ var Album = function (_Component3) {
     key: 'render',
     value: function render() {
       var props = this.props;
-      var data = "";
+      var data = props.data;
+
       return _react2.default.createElement(
         'div',
         { className: 'album' },
-        _react2.default.createElement(BasicInformation, null),
-        _react2.default.createElement(AlbumDetals, null)
+        _react2.default.createElement(BasicInformation, { data: { title: data.title } }),
+        _react2.default.createElement(AlbumDetals, { data: data })
       );
     }
   }]);
@@ -11686,13 +11755,14 @@ var BasicInformation = function (_Component4) {
     key: 'render',
     value: function render() {
       var props = this.props;
+      var data = props.data;
       return _react2.default.createElement(
         'div',
         { className: 'basic-information' },
         _react2.default.createElement(
           'div',
           { className: 'name-album' },
-          props.name
+          data.title
         ),
         _react2.default.createElement(
           'div',
@@ -11723,11 +11793,111 @@ var AlbumDetals = function (_Component5) {
     key: 'render',
     value: function render() {
       var props = this.props;
-      return _react2.default.createElement('div', { className: 'detals' });
+      var data = parseData(props.data); //--point
+
+      var fileds = [];
+
+      for (var key in data) {
+        fileds.push(_react2.default.createElement(
+          'li',
+          null,
+          _react2.default.createElement(
+            'span',
+            null,
+            key + ": "
+          ),
+          _react2.default.createElement(
+            'span',
+            null,
+            data[key]
+          )
+        ));
+      }
+
+      return _react2.default.createElement(
+        'div',
+        { className: 'detals' },
+        _react2.default.createElement(
+          'ul',
+          null,
+          fileds
+        )
+      );
     }
   }]);
   return AlbumDetals;
 }(_react.Component);
+
+var ErrorLoading = function (_Component6) {
+  (0, _inherits3.default)(ErrorLoading, _Component6);
+
+  function ErrorLoading(props) {
+    (0, _classCallCheck3.default)(this, ErrorLoading);
+
+    var _this6 = (0, _possibleConstructorReturn3.default)(this, (ErrorLoading.__proto__ || (0, _getPrototypeOf2.default)(ErrorLoading)).call(this, props));
+
+    _this6.props = props;
+    return _this6;
+  }
+
+  (0, _createClass3.default)(ErrorLoading, [{
+    key: 'render',
+    value: function render() {
+      var props = this.props;
+      return _react2.default.createElement(
+        'div',
+        { className: 'error-loading' },
+        _react2.default.createElement(
+          'div',
+          { className: 'text' },
+          props.text
+        )
+      );
+    }
+  }]);
+  return ErrorLoading;
+}(_react.Component);
+
+var AlbumsLoading = function (_Component7) {
+  (0, _inherits3.default)(AlbumsLoading, _Component7);
+
+  function AlbumsLoading(props) {
+    (0, _classCallCheck3.default)(this, AlbumsLoading);
+
+    var _this7 = (0, _possibleConstructorReturn3.default)(this, (AlbumsLoading.__proto__ || (0, _getPrototypeOf2.default)(AlbumsLoading)).call(this, props));
+
+    _this7.props = props;
+    return _this7;
+  }
+
+  (0, _createClass3.default)(AlbumsLoading, [{
+    key: 'render',
+    value: function render() {
+      var props = this.props;
+      return _react2.default.createElement(
+        'div',
+        { className: 'loading' },
+        _react2.default.createElement('div', { className: 'sidebar' })
+      );
+    }
+  }]);
+  return AlbumsLoading;
+}(_react.Component);
+
+//----------------------Рабочие функции
+
+function parseData(data) {
+  var postfix = data["artist-credit"].length > 1 ? "; " : "";
+  var artists = data["artist-credit"].map(function (item) {
+    return item.artist.name;
+  }).join(postfix);
+
+  return {
+    id: data.id,
+    artist: artists,
+    title: data.title
+  };
+}
 
 /***/ }),
 /* 261 */
@@ -11794,12 +11964,14 @@ var SearchField = function (_Component) {
     key: 'handleInput',
     value: function handleInput(e) {
       this.value = e.target.value;
-      console.log(e.metaKey, this.value);
+      if (e.key == "Enter") {
+        this.props.queryAlbums(this.value);
+      }
     }
   }, {
     key: 'handleClick',
     value: function handleClick(e) {
-      this.props.queryAlbums();
+      this.props.queryAlbums(this.value);
     }
   }, {
     key: 'render',
@@ -11833,6 +12005,10 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _assign = __webpack_require__(619);
+
+var _assign2 = _interopRequireDefault(_assign);
+
 var _redux = __webpack_require__(176);
 
 var _flags = __webpack_require__(76);
@@ -11844,16 +12020,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*
 const flags = {
 	albums: {
-		get: "GET_ALBUM",
-		getSus: "GET_SUCCESSFUL",
+		getInit: "GET_INIT",
+		//getComplete: "GET_COMPLETE",
+		getSucc: "GET_SUCCESSFUL",
 		getErr: "GET_ERROR",
 
 		create: "CREATE_ALBUM",
-		createSus: "CREATED_ALBUM",
+		createSucc: "CREATED_ALBUM",
 		createErr: "CREATED_ERROR",
 
 		save: "SAVE_ALBUM",
-		saveSus: "SAVE_ALBUM_COMPLITE",
+		saveSucc: "SAVE_ALBUM_COMPLITE",
 		saveErr: "SAVE_ALBUM_ERROR",
 	}
 };
@@ -11863,10 +12040,16 @@ function albums() {
 	var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	var action = arguments[1];
 
-	switch (action) {
-		case _flags2.default.albums.get:
+	switch (action.type) {
+		case _flags2.default.albums.getInit:
 
-			break;
+		case _flags2.default.albums.getSucc:
+
+		case _flags2.default.albums.getErr:
+
+			console.log("-------", action.payload);
+			return (0, _assign2.default)({}, action.payload, state);
+
 		default:
 			return state;
 	}
@@ -26363,6 +26546,79 @@ module.exports = function(module) {
 	return module;
 };
 
+
+/***/ }),
+/* 607 */,
+/* 608 */,
+/* 609 */,
+/* 610 */,
+/* 611 */,
+/* 612 */,
+/* 613 */,
+/* 614 */,
+/* 615 */,
+/* 616 */,
+/* 617 */,
+/* 618 */,
+/* 619 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = { "default": __webpack_require__(620), __esModule: true };
+
+/***/ }),
+/* 620 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(622);
+module.exports = __webpack_require__(41).Object.assign;
+
+/***/ }),
+/* 621 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// 19.1.2.1 Object.assign(target, source, ...)
+var getKeys  = __webpack_require__(88)
+  , gOPS     = __webpack_require__(186)
+  , pIE      = __webpack_require__(119)
+  , toObject = __webpack_require__(190)
+  , IObject  = __webpack_require__(280)
+  , $assign  = Object.assign;
+
+// should work with symbols and should have deterministic property order (V8 bug)
+module.exports = !$assign || __webpack_require__(78)(function(){
+  var A = {}
+    , B = {}
+    , S = Symbol()
+    , K = 'abcdefghijklmnopqrst';
+  A[S] = 7;
+  K.split('').forEach(function(k){ B[k] = k; });
+  return $assign({}, A)[S] != 7 || Object.keys($assign({}, B)).join('') != K;
+}) ? function assign(target, source){ // eslint-disable-line no-unused-vars
+  var T     = toObject(target)
+    , aLen  = arguments.length
+    , index = 1
+    , getSymbols = gOPS.f
+    , isEnum     = pIE.f;
+  while(aLen > index){
+    var S      = IObject(arguments[index++])
+      , keys   = getSymbols ? getKeys(S).concat(getSymbols(S)) : getKeys(S)
+      , length = keys.length
+      , j      = 0
+      , key;
+    while(length > j)if(isEnum.call(S, key = keys[j++]))T[key] = S[key];
+  } return T;
+} : $assign;
+
+/***/ }),
+/* 622 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.3.1 Object.assign(target, source)
+var $export = __webpack_require__(64);
+
+$export($export.S + $export.F, 'Object', {assign: __webpack_require__(621)});
 
 /***/ })
 /******/ ]);

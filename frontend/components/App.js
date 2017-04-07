@@ -9,8 +9,14 @@ import AlbumsContainer from "./AlbumsContainer";
 import SearchField from "./SearchField";
 //alert(actions.getAlbum);
 //import './App.css';
+let initState = {
+	albums: {
+		status: "empty",
+		data: {},
+	},
+}
 
-const store = createStore(rootReducer, {}, applyMiddleware(thunk));
+const store = createStore(rootReducer, initState, applyMiddleware(thunk));
 
 class App extends Component {
 
@@ -35,7 +41,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
 	return {
-		queryAlbums: ()=>{dispatch(actions.queryAlbums())},
+		queryAlbums: (text)=>{dispatch(actions.queryAlbums(text))},
 	};
 }
 
