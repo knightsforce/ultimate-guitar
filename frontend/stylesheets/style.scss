@@ -1,9 +1,18 @@
-﻿@mixin setOptions($position, $top, $left, $width, $height) {
+﻿$basicColor: rgba(255, 196, 0, 0.6);
+$borderBasicColor: rgba(140,90,0,1); 
+$detailsColor: rgb(255, 255, 255);//rgb(255, 255, 200);
+
+@mixin setOptions($position, $top, $left, $width, $height) {
 	width: $width;
 	height: $height;
 	position: $position;
 	top: $top;
 	left: $left;
+}
+
+@mixin backgroundImageOptions($size1, $size2, $pos1, $pos2) {
+	background-size: $size1 $size2;
+	background-position: $pos1 $pos2;
 }
 
 * {
@@ -48,19 +57,19 @@ body {
 			width: 15%;
 			height: 100%;
 			background: url(../images/icons/search.png) no-repeat;
-			background-position: center center;
-			background-size: 70% 80%;
+			@include backgroundImageOptions(70%, 80%, center, center);
 		}
 
 	}
 
 	.albumsContainer {
-		border: 1px solid blue;
 		width: 50%;
 		height: 300px;
 		position: relative;
+		overflow-y: auto;
 		.head {
-
+			background-color: rgb(0,0,0);
+			color: rgb(255,255,255);
 		}
 
 		.loading {
@@ -70,8 +79,7 @@ body {
 			.sidebar {
 				@include setOptions(absolute, 45%, 45%, 30px, 30px);
 				background: url(../images/icons/reload.png);
-				background-size: 100% 100%;
-				background-position: 0% 0%;
+				@include backgroundImageOptions(100%, 100%, 0%, 0%);
 
 				@keyframes rotate-load {
 					from {transform: rotate(0deg)}
@@ -98,46 +106,67 @@ body {
 			position: relative;
 			width: 50%;
 			height: 300px;
-			overflow-y: auto;
 
 			.album {
 				width: 100%;
+				border-bottom: 1px solid $borderBasicColor;
 				.basic-information {
 					display: flex;
 					flex-direction: flow;
 					justify-content: space-between;
 					padding: 10px 5px;
+					background-color: $basicColor;
 					.name {
 						margin-right: 10px;
-						
 					}
 					.buttons-block {
 						display: flex;
 						flex-direction: flow;
 						justify-content: flex-start;
+						button {
+							padding: 10px;
+							margin-right: 5px;
+							border: none;
+						}
 						.show-details {
-							background: url(../images/icons/checkAdd.png) no-repeat;
+							background: url(../images/icons/right.png) no-repeat;
 							transform: rotate(180deg);
+							@include backgroundImageOptions(100%, 100%, center, center);
 							&.complete {
 								transform: rotate(-90deg); 
 							}
 						}
 						.add-album {
 							background: url(../images/icons/checkAdd.png) no-repeat;
+							@include backgroundImageOptions(100%, 100%, center, center);
 							&.complete {
 								background: url(../images/icons/checkAdded.png) no-repeat;
 							}
 						}
 						.delete-album {
 							background: url(../images/icons/cross.png) no-repeat;
+							@include backgroundImageOptions(100%, 100%, center, center);
 						}
 					}
 				}
 				.detals {
+					background-color: $detailsColor;
 					ul {
+						padding: 10px 5px;
 						list-style: none;
+						//background-color: rgb(0,0,0);
+						//color: rgb(255,255,255);
 						li {
-							border-bottom: 1px solid rgb(0,0,0);
+							//border-bottom: 1px solid rgb(0,0,0);
+							padding-bottom: 5px;
+							span {
+								&:first-child {
+									font-weight: bolder;
+								}
+							}
+							&:last-child {
+								border: none;
+							}
 						}
 					}
 				}

@@ -21,8 +21,8 @@ export default class AlbumsContainer extends Component {
           return (<Album key={item.id} data={item}/>)
         });
         visibleElements=[
-          <HeadContainer className="head" nameArtist="Результаты по запросу" />,
-          <listAlbum className="listAlbum" data>{albums}</listAlbum>
+          <HeadContainer className="head" nameArtist="Результаты по запросу" data={storeAlbums}/>,
+          <listAlbum className="listAlbum" >{albums}</listAlbum>
         ];
         break;
 
@@ -45,13 +45,10 @@ export default class AlbumsContainer extends Component {
 //Проверить с маленькой буквы
 function HeadContainer(props) {//функция - т.к. нчиего сложного не делает
   //props.countAlbums - это не count, а ralese-group
+  let data = props.data;
   return(
     <div className={props.className}>
-      <div className="name">{props.nameArtist}<span>{props.searchResult || " Название"}</span></div>
-      <div className="countAlbums">
-        <span>count of all albums</span>
-        <span className="value">{props.countAlbums || "none"}</span>
-      </div>
+      <div className="name"><span>{`Результат поиска: ${data.count || 0}`}</span></div>
     </div>
   );
 }

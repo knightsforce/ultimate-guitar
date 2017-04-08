@@ -34,13 +34,16 @@ body {
       width: 15%;
       height: 100%;
       background: url(../images/icons/search.png) no-repeat;
-      background-position: center center;
-      background-size: 70% 80%; }
+      background-size: 70% 80%;
+      background-position: center center; }
   .App .albumsContainer {
-    border: 1px solid blue;
     width: 50%;
     height: 300px;
-    position: relative; }
+    position: relative;
+    overflow-y: auto; }
+    .App .albumsContainer .head {
+      background-color: black;
+      color: white; }
     .App .albumsContainer .loading {
       width: 100%;
       height: 100%;
@@ -80,35 +83,53 @@ body {
     .App .albumsContainer .listAlbum {
       position: relative;
       width: 50%;
-      height: 300px;
-      overflow-y: auto; }
+      height: 300px; }
       .App .albumsContainer .listAlbum .album {
-        width: 100%; }
+        width: 100%;
+        border-bottom: 1px solid #8c5a00; }
         .App .albumsContainer .listAlbum .album .basic-information {
           display: flex;
           flex-direction: flow;
           justify-content: space-between;
-          padding: 10px 5px; }
+          padding: 10px 5px;
+          background-color: rgba(255, 196, 0, 0.6); }
           .App .albumsContainer .listAlbum .album .basic-information .name {
             margin-right: 10px; }
           .App .albumsContainer .listAlbum .album .basic-information .buttons-block {
             display: flex;
             flex-direction: flow;
             justify-content: flex-start; }
+            .App .albumsContainer .listAlbum .album .basic-information .buttons-block button {
+              padding: 10px;
+              margin-right: 5px;
+              border: none; }
             .App .albumsContainer .listAlbum .album .basic-information .buttons-block .show-details {
-              background: url(../images/icons/checkAdd.png) no-repeat;
-              transform: rotate(180deg); }
+              background: url(../images/icons/right.png) no-repeat;
+              transform: rotate(180deg);
+              background-size: 100% 100%;
+              background-position: center center; }
               .App .albumsContainer .listAlbum .album .basic-information .buttons-block .show-details.complete {
                 transform: rotate(-90deg); }
             .App .albumsContainer .listAlbum .album .basic-information .buttons-block .add-album {
-              background: url(../images/icons/checkAdd.png) no-repeat; }
+              background: url(../images/icons/checkAdd.png) no-repeat;
+              background-size: 100% 100%;
+              background-position: center center; }
               .App .albumsContainer .listAlbum .album .basic-information .buttons-block .add-album.complete {
                 background: url(../images/icons/checkAdded.png) no-repeat; }
             .App .albumsContainer .listAlbum .album .basic-information .buttons-block .delete-album {
-              background: url(../images/icons/cross.png) no-repeat; }
-        .App .albumsContainer .listAlbum .album .detals ul {
-          list-style: none; }
-          .App .albumsContainer .listAlbum .album .detals ul li {
-            border-bottom: 1px solid black; }
+              background: url(../images/icons/cross.png) no-repeat;
+              background-size: 100% 100%;
+              background-position: center center; }
+        .App .albumsContainer .listAlbum .album .detals {
+          background-color: white; }
+          .App .albumsContainer .listAlbum .album .detals ul {
+            padding: 10px 5px;
+            list-style: none; }
+            .App .albumsContainer .listAlbum .album .detals ul li {
+              padding-bottom: 5px; }
+              .App .albumsContainer .listAlbum .album .detals ul li span:first-child {
+                font-weight: bolder; }
+              .App .albumsContainer .listAlbum .album .detals ul li:last-child {
+                border: none; }
 
 /*# sourceMappingURL=style.css.map*/
