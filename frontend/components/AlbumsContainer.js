@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import * as actions from '../lib/actions';
 import flags, {statuses} from "../lib/flags";
+import SearchField from "./SearchField";
 
 export default class AlbumsContainer extends Component {
   constructor(props) {
@@ -17,11 +18,16 @@ export default class AlbumsContainer extends Component {
         break;
 
       case statuses.succ:
-        let albums = storeAlbums.data["release-groups"].map((item, i)=>{
+
+        let albums = storeAlbums.list.map((item, i)=>{
           return (<Album key={item.id} data={item}/>)
         });
         visibleElements.push(
-          <HeadContainer className="head" nameArtist="Результаты по запросу" data={storeAlbums}/>,
+          <HeadContainer
+            className="head"
+            count={storeAlbums.list.length}
+            queryOneAlbum={props.queryOneAlbum}
+          />,
           <listAlbum className="listAlbum" >{albums}</listAlbum>
         );
         break;
@@ -42,15 +48,52 @@ export default class AlbumsContainer extends Component {
     );
   }
 }
-//Проверить с маленькой буквы
-function HeadContainer(props) {//функция - т.к. нчиего сложного не делает
-  //props.countAlbums - это не count, а ralese-group
-  let data = props.data;
-  return(
-    <div className={props.className}>
-      <div className="name"><span>{`Результат поиска: ${data.count || 0}`}</span></div>
-    </div>
-  );
+
+
+
+class HeadContainer extends Component {
+  constructor(props) {
+    super(props);
+    this.props=props;
+    this.handleVisible=this.handleVisible.bind(this);
+    this.state={
+      visibleSearch: false,
+    };
+  }
+
+  handleVisible(e) {
+
+    this.setState((prevState)=>{
+      return {"visibleSearch": !prevState.visibleSearch};
+    });
+  }
+
+  render() {
+
+    let props = this.props;
+    let count = props.count;
+    let styleButton={
+      transform: ((this.state.visibleSearch) ? "rotate(45deg)" : null)
+    };
+    let styleSearch = {
+      display: ((this.state.visibleSearch) ? "flex" : "none")
+    }
+    return(
+      <div className={props.className}>
+        <div className="wrap">
+          <div className="name">
+            <span>{`Результаты поиска: ${props.count || 0}`}</span>
+          </div>
+          <button
+              className="addAlbum"
+              onClick={this.handleVisible}
+              style={styleButton}
+          ></button>
+        </div>
+        <SearchField style={styleSearch} queryAlbums={props.queryOneAlbum}/>
+      </div>
+    );
+  }
 }
 
 class listAlbum extends Component {
@@ -60,9 +103,6 @@ class listAlbum extends Component {
   }
   render() {
     let props = this.props;
-    let list = () => {
-
-    }
     return (
       <div className={props.className}>
         {props.children}
@@ -142,7 +182,7 @@ class AlbumDetails extends Component {
   }
   render() {
     let props = this.props;
-    let data = parseData(props.data);//--point
+    let data = props.data;
     let isVisible=props.isVisible;
     let style = {
       display: ((isVisible) ? "block" : "none")
@@ -208,7 +248,7 @@ class AlbumsLoading extends Component {
 
 //----------------------Рабочие функции
 
-function parseData(data) {
+/*function parseData(data) {
   let postfix = (data["artist-credit"].length>1) ? "; " : "";
   let artists = data["artist-credit"].map((item)=>{
     return item.artist.name
@@ -219,4 +259,4 @@ function parseData(data) {
     artist: artists,
     title: data.title
   }
-}
+}*/

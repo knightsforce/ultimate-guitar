@@ -3140,9 +3140,9 @@ var flags = {
 		getSucc: "GET_SUCCESSFUL",
 		getErr: "GET_ERROR",
 
-		create: "CREATE_ALBUM",
-		createSucc: "CREATED_ALBUM",
-		createErr: "CREATED_ERROR",
+		add: "ADD_ALBUM",
+		/*createSucc: "CREATED_ALBUM",
+  createErr: "CREATED_ERROR",*/
 
 		save: "SAVE_ALBUM",
 		saveSucc: "SAVE_ALBUM_COMPLITE",
@@ -4941,7 +4941,7 @@ module.exports = setInnerHTML;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.queryAlbums = undefined;
+exports.queryOneAlbum = exports.queryAlbums = undefined;
 
 var _flags = __webpack_require__(77);
 
@@ -4966,7 +4966,7 @@ function queryAlbums(text) {
 				//dispatch(flags.albums.getComplete);
 			}, //Убрать отрисовку загрузки
 			success: function success(data) {
-				dispatch(albumsAction(_flags2.default.albums.getSucc, data));
+				dispatch(albumsAction(_flags2.default.albums.getSucc, parseResponse(data, "m")));
 			}, //Пробросить данные
 			error: function error() {
 				dispatch(albumsAction(_flags2.default.albums.getErr, {}));
@@ -4982,6 +4982,31 @@ function queryAlbums(text) {
   		});*/
 	};
 }
+
+exports.queryAlbums = queryAlbums;
+
+
+function queryOneAlbum(text) {
+	alert(text);
+	return function (dispatch) {
+		$.ajax("http://musicbrainz.org/ws/2/release-group/" + text + "?inc=artist-credits&fmt=json", {
+			crossDomain: true,
+			success: function success(data) {
+				console.log("-------------------", data);
+				dispatch(oneAlbumsAction(_flags2.default.albums.add, parseResponse(data, "o")));
+			}, //Пробросить данные
+			error: function error() {
+				//dispatch(albumsAction(flags.albums.getErr, {}));
+			}, //выдать ошибку
+
+			cache: false
+		});
+	};
+}
+
+exports.queryOneAlbum = queryOneAlbum;
+
+
 function albumsAction(flag, data) {
 	var status = null;
 	switch (flag) {
@@ -4999,12 +5024,23 @@ function albumsAction(flag, data) {
 		type: flag,
 		payload: {
 			status: status,
-			data: data
+			list: data
 		}
 	};
 }
 
-exports.queryAlbums = queryAlbums;
+function oneAlbumsAction(flag, data) {
+
+	switch (flag) {
+		case _flags2.default.albums.add:
+			break;
+	}
+
+	return {
+		type: flag,
+		payload: data
+	};
+}
 
 //------------------Рабочие функции
 
@@ -5012,24 +5048,41 @@ function createQuery(text) {
 	return "http://musicbrainz.org/ws/2/release-group/?query=" + text + "&fmt=json";
 }
 
-/*function parseData(jsonObj) {
-	let list=jsonObj["release-groups"].map((item, i)=>{
-		return {
-			id: item.id,
-			title: item.title,
-		}
-	});
+function parseResponse(jsonObj, flag) {
+	flag = flag.toLowerCase();
+	var obj = {};
 
-
-	var obj = {
-		count: jsonObj.count,
-		list: list,
-		artist: {
-
-		}
+	switch (flag) {
+		case "m":
+			obj = parseAlbums(jsonObj);
+			break;
+		case "o":
+			obj = parseOneAlbum(jsonObj);
+			break;
 	}
+
 	return obj;
-}*/
+}
+
+function parseAlbums(data) {
+	return data["release-groups"].map(function (item, i) {
+		return parseOneAlbum(item);
+	});
+}
+//c9fdb94c-4975-4ed6-a96f-ef6d80bb7738
+function parseOneAlbum(data) {
+
+	var postfix = data["artist-credit"].length > 1 ? "; " : "";
+	var artists = data["artist-credit"].map(function (item) {
+		return item.artist.name;
+	}).join(postfix);
+
+	return {
+		id: data.id,
+		artist: artists,
+		title: data.title
+	};
+}
 
 /***/ }),
 /* 110 */
@@ -11397,7 +11450,7 @@ function warning(message) {
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
 exports.store = undefined;
 
@@ -11460,47 +11513,54 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //alert(actions.getAlbum);
 //import './App.css';
 var initState = {
-	albums: {
-		status: "empty",
-		data: {}
-	}
+  albums: {
+    status: "empty",
+    list: []
+  }
 };
 
 var store = (0, _redux.createStore)(_reducers2.default, initState, (0, _redux.applyMiddleware)(_reduxThunk2.default));
 
 var App = function (_Component) {
-	(0, _inherits3.default)(App, _Component);
+  (0, _inherits3.default)(App, _Component);
 
-	function App() {
-		(0, _classCallCheck3.default)(this, App);
-		return (0, _possibleConstructorReturn3.default)(this, (App.__proto__ || (0, _getPrototypeOf2.default)(App)).apply(this, arguments));
-	}
+  function App() {
+    (0, _classCallCheck3.default)(this, App);
+    return (0, _possibleConstructorReturn3.default)(this, (App.__proto__ || (0, _getPrototypeOf2.default)(App)).apply(this, arguments));
+  }
 
-	(0, _createClass3.default)(App, [{
-		key: 'render',
-		value: function render() {
-			var props = this.props;
-			return _react2.default.createElement(
-				'div',
-				{ className: 'App' },
-				_react2.default.createElement(_SearchField2.default, { queryAlbums: props.queryAlbums }),
-				_react2.default.createElement(_AlbumsContainer2.default, { className: 'albumsContainer', storeAlbums: this.props.store.albums })
-			);
-		}
-	}]);
-	return App;
+  (0, _createClass3.default)(App, [{
+    key: 'render',
+    value: function render() {
+      var props = this.props;
+      return _react2.default.createElement(
+        'div',
+        { className: 'App' },
+        _react2.default.createElement(_SearchField2.default, { queryAlbums: props.queryAlbums }),
+        _react2.default.createElement(_AlbumsContainer2.default, {
+          className: 'albumsContainer',
+          storeAlbums: this.props.store.albums,
+          queryOneAlbum: props.queryOneAlbum
+        })
+      );
+    }
+  }]);
+  return App;
 }(_react.Component);
 
 function mapStateToProps(state) {
-	return { store: state };
+  return { store: state };
 }
 
 function mapDispatchToProps(dispatch) {
-	return {
-		queryAlbums: function queryAlbums(text) {
-			dispatch(actions.queryAlbums(text));
-		}
-	};
+  return {
+    queryAlbums: function queryAlbums(text) {
+      dispatch(actions.queryAlbums(text));
+    },
+    queryOneAlbum: function queryOneAlbum(text) {
+      dispatch(actions.queryOneAlbum(text));
+    }
+  };
 }
 
 //----------------------------------
@@ -11595,6 +11655,10 @@ var _flags = __webpack_require__(77);
 
 var _flags2 = _interopRequireDefault(_flags);
 
+var _SearchField = __webpack_require__(262);
+
+var _SearchField2 = _interopRequireDefault(_SearchField);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -11623,10 +11687,15 @@ var AlbumsContainer = function (_Component) {
           break;
 
         case _flags.statuses.succ:
-          var albums = storeAlbums.data["release-groups"].map(function (item, i) {
+
+          var albums = storeAlbums.list.map(function (item, i) {
             return _react2.default.createElement(Album, { key: item.id, data: item });
           });
-          visibleElements.push(_react2.default.createElement(HeadContainer, { className: 'head', nameArtist: '\u0420\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u044B \u043F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443', data: storeAlbums }), _react2.default.createElement(
+          visibleElements.push(_react2.default.createElement(HeadContainer, {
+            className: 'head',
+            count: storeAlbums.list.length,
+            queryOneAlbum: props.queryOneAlbum
+          }), _react2.default.createElement(
             'listAlbum',
             { className: 'listAlbum' },
             albums
@@ -11651,46 +11720,89 @@ var AlbumsContainer = function (_Component) {
   }]);
   return AlbumsContainer;
 }(_react.Component);
-//Проверить с маленькой буквы
-
 
 exports.default = AlbumsContainer;
-function HeadContainer(props) {
-  //функция - т.к. нчиего сложного не делает
-  //props.countAlbums - это не count, а ralese-group
-  var data = props.data;
-  return _react2.default.createElement(
-    'div',
-    { className: props.className },
-    _react2.default.createElement(
-      'div',
-      { className: 'name' },
-      _react2.default.createElement(
-        'span',
-        null,
-        '\u0420\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442 \u043F\u043E\u0438\u0441\u043A\u0430: ' + (data.count || 0)
-      )
-    )
-  );
-}
 
-var listAlbum = function (_Component2) {
-  (0, _inherits3.default)(listAlbum, _Component2);
+var HeadContainer = function (_Component2) {
+  (0, _inherits3.default)(HeadContainer, _Component2);
+
+  function HeadContainer(props) {
+    (0, _classCallCheck3.default)(this, HeadContainer);
+
+    var _this2 = (0, _possibleConstructorReturn3.default)(this, (HeadContainer.__proto__ || (0, _getPrototypeOf2.default)(HeadContainer)).call(this, props));
+
+    _this2.props = props;
+    _this2.handleVisible = _this2.handleVisible.bind(_this2);
+    _this2.state = {
+      visibleSearch: false
+    };
+    return _this2;
+  }
+
+  (0, _createClass3.default)(HeadContainer, [{
+    key: 'handleVisible',
+    value: function handleVisible(e) {
+
+      this.setState(function (prevState) {
+        return { "visibleSearch": !prevState.visibleSearch };
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+
+      var props = this.props;
+      var count = props.count;
+      var styleButton = {
+        transform: this.state.visibleSearch ? "rotate(45deg)" : null
+      };
+      var styleSearch = {
+        display: this.state.visibleSearch ? "flex" : "none"
+      };
+      return _react2.default.createElement(
+        'div',
+        { className: props.className },
+        _react2.default.createElement(
+          'div',
+          { className: 'wrap' },
+          _react2.default.createElement(
+            'div',
+            { className: 'name' },
+            _react2.default.createElement(
+              'span',
+              null,
+              '\u0420\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u044B \u043F\u043E\u0438\u0441\u043A\u0430: ' + (props.count || 0)
+            )
+          ),
+          _react2.default.createElement('button', {
+            className: 'addAlbum',
+            onClick: this.handleVisible,
+            style: styleButton
+          })
+        ),
+        _react2.default.createElement(_SearchField2.default, { style: styleSearch, queryAlbums: props.queryOneAlbum })
+      );
+    }
+  }]);
+  return HeadContainer;
+}(_react.Component);
+
+var listAlbum = function (_Component3) {
+  (0, _inherits3.default)(listAlbum, _Component3);
 
   function listAlbum(props) {
     (0, _classCallCheck3.default)(this, listAlbum);
 
-    var _this2 = (0, _possibleConstructorReturn3.default)(this, (listAlbum.__proto__ || (0, _getPrototypeOf2.default)(listAlbum)).call(this, props));
+    var _this3 = (0, _possibleConstructorReturn3.default)(this, (listAlbum.__proto__ || (0, _getPrototypeOf2.default)(listAlbum)).call(this, props));
 
-    _this2.props = props;
-    return _this2;
+    _this3.props = props;
+    return _this3;
   }
 
   (0, _createClass3.default)(listAlbum, [{
     key: 'render',
     value: function render() {
       var props = this.props;
-      var list = function list() {};
       return _react2.default.createElement(
         'div',
         { className: props.className },
@@ -11701,21 +11813,21 @@ var listAlbum = function (_Component2) {
   return listAlbum;
 }(_react.Component);
 
-var Album = function (_Component3) {
-  (0, _inherits3.default)(Album, _Component3);
+var Album = function (_Component4) {
+  (0, _inherits3.default)(Album, _Component4);
 
   function Album(props) {
     (0, _classCallCheck3.default)(this, Album);
 
-    var _this3 = (0, _possibleConstructorReturn3.default)(this, (Album.__proto__ || (0, _getPrototypeOf2.default)(Album)).call(this, props));
+    var _this4 = (0, _possibleConstructorReturn3.default)(this, (Album.__proto__ || (0, _getPrototypeOf2.default)(Album)).call(this, props));
 
-    _this3.props = props;
+    _this4.props = props;
 
-    _this3.handleVisible = _this3.handleVisible.bind(_this3);
-    _this3.state = {
+    _this4.handleVisible = _this4.handleVisible.bind(_this4);
+    _this4.state = {
       visibleDetails: false
     };
-    return _this3;
+    return _this4;
   }
 
   (0, _createClass3.default)(Album, [{
@@ -11747,16 +11859,16 @@ var Album = function (_Component3) {
   return Album;
 }(_react.Component);
 
-var BasicInformation = function (_Component4) {
-  (0, _inherits3.default)(BasicInformation, _Component4);
+var BasicInformation = function (_Component5) {
+  (0, _inherits3.default)(BasicInformation, _Component5);
 
   function BasicInformation(props) {
     (0, _classCallCheck3.default)(this, BasicInformation);
 
-    var _this4 = (0, _possibleConstructorReturn3.default)(this, (BasicInformation.__proto__ || (0, _getPrototypeOf2.default)(BasicInformation)).call(this, props));
+    var _this5 = (0, _possibleConstructorReturn3.default)(this, (BasicInformation.__proto__ || (0, _getPrototypeOf2.default)(BasicInformation)).call(this, props));
 
-    _this4.props = props;
-    return _this4;
+    _this5.props = props;
+    return _this5;
   }
 
   (0, _createClass3.default)(BasicInformation, [{
@@ -11792,23 +11904,23 @@ var BasicInformation = function (_Component4) {
   return BasicInformation;
 }(_react.Component);
 
-var AlbumDetails = function (_Component5) {
-  (0, _inherits3.default)(AlbumDetails, _Component5);
+var AlbumDetails = function (_Component6) {
+  (0, _inherits3.default)(AlbumDetails, _Component6);
 
   function AlbumDetails(props) {
     (0, _classCallCheck3.default)(this, AlbumDetails);
 
-    var _this5 = (0, _possibleConstructorReturn3.default)(this, (AlbumDetails.__proto__ || (0, _getPrototypeOf2.default)(AlbumDetails)).call(this, props));
+    var _this6 = (0, _possibleConstructorReturn3.default)(this, (AlbumDetails.__proto__ || (0, _getPrototypeOf2.default)(AlbumDetails)).call(this, props));
 
-    _this5.props = props;
-    return _this5;
+    _this6.props = props;
+    return _this6;
   }
 
   (0, _createClass3.default)(AlbumDetails, [{
     key: 'render',
     value: function render() {
       var props = this.props;
-      var data = parseData(props.data); //--point
+      var data = props.data;
       var isVisible = props.isVisible;
       var style = {
         display: isVisible ? "block" : "none"
@@ -11847,16 +11959,16 @@ var AlbumDetails = function (_Component5) {
   return AlbumDetails;
 }(_react.Component);
 
-var ErrorLoading = function (_Component6) {
-  (0, _inherits3.default)(ErrorLoading, _Component6);
+var ErrorLoading = function (_Component7) {
+  (0, _inherits3.default)(ErrorLoading, _Component7);
 
   function ErrorLoading(props) {
     (0, _classCallCheck3.default)(this, ErrorLoading);
 
-    var _this6 = (0, _possibleConstructorReturn3.default)(this, (ErrorLoading.__proto__ || (0, _getPrototypeOf2.default)(ErrorLoading)).call(this, props));
+    var _this7 = (0, _possibleConstructorReturn3.default)(this, (ErrorLoading.__proto__ || (0, _getPrototypeOf2.default)(ErrorLoading)).call(this, props));
 
-    _this6.props = props;
-    return _this6;
+    _this7.props = props;
+    return _this7;
   }
 
   (0, _createClass3.default)(ErrorLoading, [{
@@ -11877,16 +11989,16 @@ var ErrorLoading = function (_Component6) {
   return ErrorLoading;
 }(_react.Component);
 
-var AlbumsLoading = function (_Component7) {
-  (0, _inherits3.default)(AlbumsLoading, _Component7);
+var AlbumsLoading = function (_Component8) {
+  (0, _inherits3.default)(AlbumsLoading, _Component8);
 
   function AlbumsLoading(props) {
     (0, _classCallCheck3.default)(this, AlbumsLoading);
 
-    var _this7 = (0, _possibleConstructorReturn3.default)(this, (AlbumsLoading.__proto__ || (0, _getPrototypeOf2.default)(AlbumsLoading)).call(this, props));
+    var _this8 = (0, _possibleConstructorReturn3.default)(this, (AlbumsLoading.__proto__ || (0, _getPrototypeOf2.default)(AlbumsLoading)).call(this, props));
 
-    _this7.props = props;
-    return _this7;
+    _this8.props = props;
+    return _this8;
   }
 
   (0, _createClass3.default)(AlbumsLoading, [{
@@ -11905,18 +12017,18 @@ var AlbumsLoading = function (_Component7) {
 
 //----------------------Рабочие функции
 
-function parseData(data) {
-  var postfix = data["artist-credit"].length > 1 ? "; " : "";
-  var artists = data["artist-credit"].map(function (item) {
-    return item.artist.name;
+/*function parseData(data) {
+  let postfix = (data["artist-credit"].length>1) ? "; " : "";
+  let artists = data["artist-credit"].map((item)=>{
+    return item.artist.name
   }).join(postfix);
-
+  
   return {
     id: data.id,
     artist: artists,
     title: data.title
-  };
-}
+  }
+}*/
 
 /***/ }),
 /* 262 */
@@ -11976,6 +12088,8 @@ var SearchField = function (_Component) {
     _this.props = props;
     _this.handleInput = _this.handleInput.bind(_this);
     _this.handleClick = _this.handleClick.bind(_this);
+    _this.handlePaste = _this.handlePaste.bind(_this);
+    _this.handleCut = _this.handleCut.bind(_this);
     return _this;
   }
 
@@ -11988,6 +12102,16 @@ var SearchField = function (_Component) {
       }
     }
   }, {
+    key: 'handlePaste',
+    value: function handlePaste(e) {
+      this.value = e.clipboardData.getData('Text');
+    }
+  }, {
+    key: 'handleCut',
+    value: function handleCut(e) {
+      this.value = e.clipboardData.getData('Text');
+    }
+  }, {
     key: 'handleClick',
     value: function handleClick(e) {
       this.props.queryAlbums(this.value);
@@ -11998,11 +12122,16 @@ var SearchField = function (_Component) {
 
       return _react2.default.createElement(
         'div',
-        { className: 'search-field' },
+        { className: 'search-field', style: this.props.style || null },
         _react2.default.createElement(
           'div',
           { className: 'search-input' },
-          _react2.default.createElement('input', { onKeyPress: this.handleInput, placeholder: '\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435' })
+          _react2.default.createElement('input', {
+            onKeyPress: this.handleInput,
+            onPaste: this.handlePaste,
+            onCut: this.handleCut,
+            placeholder: '\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435'
+          })
         ),
         _react2.default.createElement('div', { className: 'button-search', onClick: this.handleClick })
       );
@@ -12067,6 +12196,11 @@ function albums() {
 		case _flags2.default.albums.getErr:
 			return (0, _assign2.default)({}, state, action.payload);
 
+			break;
+		case _flags2.default.albums.add:
+			return (0, _assign2.default)({}, state, {
+				list: state.list.concat(action.payload)
+			});
 		default:
 			return state;
 	}

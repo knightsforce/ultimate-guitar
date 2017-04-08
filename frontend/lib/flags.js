@@ -5,9 +5,9 @@ const flags = {
 		getSucc: "GET_SUCCESSFUL",
 		getErr: "GET_ERROR",
 
-		create: "CREATE_ALBUM",
-		createSucc: "CREATED_ALBUM",
-		createErr: "CREATED_ERROR",
+		add: "ADD_ALBUM",
+		/*createSucc: "CREATED_ALBUM",
+		createErr: "CREATED_ERROR",*/
 
 		save: "SAVE_ALBUM",
 		saveSucc: "SAVE_ALBUM_COMPLITE",

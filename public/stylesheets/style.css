@@ -36,16 +36,36 @@ body {
       height: 100%;
       background: url(../images/icons/search.png) no-repeat;
       background-size: 70% 80%;
-      background-position: center center; }
+      background-position: center center;
+      cursor: pointer; }
   .App .albumsContainer {
     width: 50%;
     height: 300px;
     position: relative;
     overflow-y: auto; }
-    .App .albumsContainer .head {
+    .App .albumsContainer .head .wrap {
       background-color: black;
       color: white;
-      padding: 5px; }
+      padding: 5px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between; }
+      .App .albumsContainer .head .wrap .addAlbum {
+        background: url(../images/icons/add.png) no-repeat;
+        background-size: 100% 100%;
+        background-position: center center;
+        cursor: pointer;
+        border: none;
+        padding: 15px;
+        margin: 5px; }
+    .App .albumsContainer .head .search-field {
+      width: auto;
+      border: 10px solid black; }
+      .App .albumsContainer .head .search-field .search-input {
+        border-right: 10px solid #000001;
+        width: 90%; }
+      .App .albumsContainer .head .search-field .button-search {
+        width: 10%; }
     .App .albumsContainer .loading {
       width: 100%;
       height: 100%;
@@ -62,6 +82,7 @@ body {
         background: url(../images/icons/reload.png);
         background-size: 100% 100%;
         background-position: 0% 0%;
+        cursor: pointer;
         animation: rotate-load 1s infinite linear; }
 
 @keyframes rotate-load {
@@ -105,25 +126,27 @@ body {
             .App .albumsContainer .listAlbum .album .basic-information .buttons-block button {
               padding: 10px;
               margin-right: 5px;
-              border: none;
-              cursor: pointer; }
+              border: none; }
             .App .albumsContainer .listAlbum .album .basic-information .buttons-block .show-details {
               background: url(../images/icons/right.png) no-repeat;
               transform: rotate(180deg);
               background-size: 100% 100%;
-              background-position: center center; }
+              background-position: center center;
+              cursor: pointer; }
               .App .albumsContainer .listAlbum .album .basic-information .buttons-block .show-details.complete {
                 transform: rotate(-90deg); }
             .App .albumsContainer .listAlbum .album .basic-information .buttons-block .add-album {
               background: url(../images/icons/checkAdd.png) no-repeat;
               background-size: 100% 100%;
-              background-position: center center; }
+              background-position: center center;
+              cursor: pointer; }
               .App .albumsContainer .listAlbum .album .basic-information .buttons-block .add-album.complete {
                 background: url(../images/icons/checkAdded.png) no-repeat; }
             .App .albumsContainer .listAlbum .album .basic-information .buttons-block .delete-album {
               background: url(../images/icons/cross.png) no-repeat;
               background-size: 100% 100%;
-              background-position: center center; }
+              background-position: center center;
+              cursor: pointer; }
         .App .albumsContainer .listAlbum .album .detals {
           background-color: white; }
           .App .albumsContainer .listAlbum .album .detals ul {

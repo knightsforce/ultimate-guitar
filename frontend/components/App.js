@@ -12,7 +12,7 @@ import SearchField from "./SearchField";
 let initState = {
 	albums: {
 		status: "empty",
-		data: {},
+		list: [],
 	},
 }
 
@@ -25,13 +25,15 @@ class App extends Component {
     return (
       <div className="App">
     	<SearchField queryAlbums={props.queryAlbums}/>
-      	<AlbumsContainer className="albumsContainer" storeAlbums={this.props.store.albums}/>
+      	<AlbumsContainer
+      		className="albumsContainer"
+      		storeAlbums={this.props.store.albums}
+      		queryOneAlbum={props.queryOneAlbum}
+      	/>
       </div>
     );
   }
 }
-
-
 
 
 
@@ -42,6 +44,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
 	return {
 		queryAlbums: (text)=>{dispatch(actions.queryAlbums(text))},
+		queryOneAlbum: (text)=>{dispatch(actions.queryOneAlbum(text))}
 	};
 }
 

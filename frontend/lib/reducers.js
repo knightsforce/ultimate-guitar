@@ -29,6 +29,13 @@ function albums(state={}, action) {
 		case flags.albums.getErr:
 			return Object.assign({}, state, action.payload);
 
+			break;
+		case flags.albums.add: 
+			return Object.assign({}, state,
+					{
+						list: state.list.concat(action.payload)
+					}
+				);
 		default:
 			return state;
 	}
