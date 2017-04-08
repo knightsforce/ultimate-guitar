@@ -1,4 +1,4 @@
-﻿$basicColor: rgba(255, 196, 0, 0.6);
+﻿$basicColor: rgba(255, 196, 0, 1);
 $borderBasicColor: rgba(140,90,0,1); 
 $detailsColor: rgb(255, 255, 255);//rgb(255, 255, 200);
 
@@ -19,6 +19,7 @@ $detailsColor: rgb(255, 255, 255);//rgb(255, 255, 200);
 	margin: 0;
 	padding: 0;
 	outline: none;
+	font-size: arial;
 }
 
 body {
@@ -70,6 +71,7 @@ body {
 		.head {
 			background-color: rgb(0,0,0);
 			color: rgb(255,255,255);
+			padding: 5px;
 		}
 
 		.loading {
@@ -116,6 +118,7 @@ body {
 					justify-content: space-between;
 					padding: 10px 5px;
 					background-color: $basicColor;
+					font-weight: bolder;
 					.name {
 						margin-right: 10px;
 					}
@@ -127,6 +130,7 @@ body {
 							padding: 10px;
 							margin-right: 5px;
 							border: none;
+							cursor: pointer;
 						}
 						.show-details {
 							background: url(../images/icons/right.png) no-repeat;

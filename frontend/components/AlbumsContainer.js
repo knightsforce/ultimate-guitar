@@ -10,28 +10,28 @@ export default class AlbumsContainer extends Component {
   render() {
     let props = this.props;
     let storeAlbums = props.storeAlbums;
-    let visibleElements = null;
+    let visibleElements = [];
     switch(storeAlbums.status) {
       case statuses.load:
-        visibleElements=[<AlbumsLoading/>];
+        visibleElements.push(<AlbumsLoading/>);
         break;
 
       case statuses.succ:
         let albums = storeAlbums.data["release-groups"].map((item, i)=>{
           return (<Album key={item.id} data={item}/>)
         });
-        visibleElements=[
+        visibleElements.push(
           <HeadContainer className="head" nameArtist="Результаты по запросу" data={storeAlbums}/>,
           <listAlbum className="listAlbum" >{albums}</listAlbum>
-        ];
+        );
         break;
 
       case statuses.err:
-        visibleElements=[<ErrorLoading text="Ошибка загрузки"/>];
+        visibleElements.push(<ErrorLoading text="Ошибка загрузки"/>);
         break;
 
       default:
-        visibleElements = [];
+        
         break;
     }
     
@@ -75,15 +75,32 @@ class Album extends Component {
   constructor(props) {
     super(props);
     this.props=props;
+  
+    this.handleVisible = this.handleVisible.bind(this);
+    this.state={
+      visibleDetails: false,
+    };
   }
+ 
+  handleVisible(e) {
+    /*
+      Не использую здесь делегирование, т.к.
+      проще обработать, производительность не упадет, т.к.
+      React под капотом все обработчки соединяет в один используя  делегирование 
+    */
+    this.setState((prevState)=>{
+      return {"visibleDetails": !prevState.visibleDetails};
+    });
+  }
+
   render() {
     let props = this.props;
     let data = props.data;
-
+    let isVisible = this.state.visibleDetails;
     return (
       <div className="album">
-        <BasicInformation data={{title: data.title}} />
-        <AlbumDetals data={data}/>
+        <BasicInformation data={{title: data.title}} clickDetailsButton={this.handleVisible} isVisible={isVisible}/>
+        <AlbumDetails data={data} isVisible={isVisible} />
       </div>
     );
   }
@@ -94,14 +111,22 @@ class BasicInformation extends Component {
     super(props);
     this.props=props;
   }
+
   render() {
     let props = this.props;
     let data = props.data;
+    let isVisible=props.isVisible;
+    let style = {
+      transform: ((isVisible) ? null : "rotate(90deg)")
+    };
     return (
       <div className="basic-information">
         <div className="name-album">{data.title}</div>
         <div className="buttons-block">
-          <button type="button" className="show-details"/>
+          <button type="button" className="show-details" 
+              onClick={props.clickDetailsButton}
+              style={style}
+          />
           <button type="button" className="add-album"/>
           <button type="button" className="delete-album"/>
         </div>
@@ -110,7 +135,7 @@ class BasicInformation extends Component {
   }
 }
 
-class AlbumDetals extends Component {
+class AlbumDetails extends Component {
   constructor(props) {
     super(props);
     this.props=props;
@@ -118,6 +143,10 @@ class AlbumDetals extends Component {
   render() {
     let props = this.props;
     let data = parseData(props.data);//--point
+    let isVisible=props.isVisible;
+    let style = {
+      display: ((isVisible) ? "block" : "none")
+    };
 
     let fileds = [];
     
@@ -135,7 +164,7 @@ class AlbumDetals extends Component {
     }
 
     return (
-      <div className="detals">
+      <div className="detals" style={style}>
         <ul>
           {fileds}
         </ul>

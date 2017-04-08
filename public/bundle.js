@@ -11616,29 +11616,29 @@ var AlbumsContainer = function (_Component) {
     value: function render() {
       var props = this.props;
       var storeAlbums = props.storeAlbums;
-      var visibleElements = null;
+      var visibleElements = [];
       switch (storeAlbums.status) {
         case _flags.statuses.load:
-          visibleElements = [_react2.default.createElement(AlbumsLoading, null)];
+          visibleElements.push(_react2.default.createElement(AlbumsLoading, null));
           break;
 
         case _flags.statuses.succ:
           var albums = storeAlbums.data["release-groups"].map(function (item, i) {
             return _react2.default.createElement(Album, { key: item.id, data: item });
           });
-          visibleElements = [_react2.default.createElement(HeadContainer, { className: 'head', nameArtist: '\u0420\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u044B \u043F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443', data: storeAlbums }), _react2.default.createElement(
+          visibleElements.push(_react2.default.createElement(HeadContainer, { className: 'head', nameArtist: '\u0420\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u044B \u043F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443', data: storeAlbums }), _react2.default.createElement(
             'listAlbum',
             { className: 'listAlbum' },
             albums
-          )];
+          ));
           break;
 
         case _flags.statuses.err:
-          visibleElements = [_react2.default.createElement(ErrorLoading, { text: '\u041E\u0448\u0438\u0431\u043A\u0430 \u0437\u0430\u0433\u0440\u0443\u0437\u043A\u0438' })];
+          visibleElements.push(_react2.default.createElement(ErrorLoading, { text: '\u041E\u0448\u0438\u0431\u043A\u0430 \u0437\u0430\u0433\u0440\u0443\u0437\u043A\u0438' }));
           break;
 
         default:
-          visibleElements = [];
+
           break;
       }
 
@@ -11710,20 +11710,37 @@ var Album = function (_Component3) {
     var _this3 = (0, _possibleConstructorReturn3.default)(this, (Album.__proto__ || (0, _getPrototypeOf2.default)(Album)).call(this, props));
 
     _this3.props = props;
+
+    _this3.handleVisible = _this3.handleVisible.bind(_this3);
+    _this3.state = {
+      visibleDetails: false
+    };
     return _this3;
   }
 
   (0, _createClass3.default)(Album, [{
+    key: 'handleVisible',
+    value: function handleVisible(e) {
+      /*
+        Не использую здесь делегирование, т.к.
+        проще обработать, производительность не упадет, т.к.
+        React под капотом все обработчки соединяет в один используя  делегирование 
+      */
+      this.setState(function (prevState) {
+        return { "visibleDetails": !prevState.visibleDetails };
+      });
+    }
+  }, {
     key: 'render',
     value: function render() {
       var props = this.props;
       var data = props.data;
-
+      var isVisible = this.state.visibleDetails;
       return _react2.default.createElement(
         'div',
         { className: 'album' },
-        _react2.default.createElement(BasicInformation, { data: { title: data.title } }),
-        _react2.default.createElement(AlbumDetals, { data: data })
+        _react2.default.createElement(BasicInformation, { data: { title: data.title }, clickDetailsButton: this.handleVisible, isVisible: isVisible }),
+        _react2.default.createElement(AlbumDetails, { data: data, isVisible: isVisible })
       );
     }
   }]);
@@ -11747,6 +11764,10 @@ var BasicInformation = function (_Component4) {
     value: function render() {
       var props = this.props;
       var data = props.data;
+      var isVisible = props.isVisible;
+      var style = {
+        transform: isVisible ? null : "rotate(90deg)"
+      };
       return _react2.default.createElement(
         'div',
         { className: 'basic-information' },
@@ -11758,7 +11779,10 @@ var BasicInformation = function (_Component4) {
         _react2.default.createElement(
           'div',
           { className: 'buttons-block' },
-          _react2.default.createElement('button', { type: 'button', className: 'show-details' }),
+          _react2.default.createElement('button', { type: 'button', className: 'show-details',
+            onClick: props.clickDetailsButton,
+            style: style
+          }),
           _react2.default.createElement('button', { type: 'button', className: 'add-album' }),
           _react2.default.createElement('button', { type: 'button', className: 'delete-album' })
         )
@@ -11768,23 +11792,27 @@ var BasicInformation = function (_Component4) {
   return BasicInformation;
 }(_react.Component);
 
-var AlbumDetals = function (_Component5) {
-  (0, _inherits3.default)(AlbumDetals, _Component5);
+var AlbumDetails = function (_Component5) {
+  (0, _inherits3.default)(AlbumDetails, _Component5);
 
-  function AlbumDetals(props) {
-    (0, _classCallCheck3.default)(this, AlbumDetals);
+  function AlbumDetails(props) {
+    (0, _classCallCheck3.default)(this, AlbumDetails);
 
-    var _this5 = (0, _possibleConstructorReturn3.default)(this, (AlbumDetals.__proto__ || (0, _getPrototypeOf2.default)(AlbumDetals)).call(this, props));
+    var _this5 = (0, _possibleConstructorReturn3.default)(this, (AlbumDetails.__proto__ || (0, _getPrototypeOf2.default)(AlbumDetails)).call(this, props));
 
     _this5.props = props;
     return _this5;
   }
 
-  (0, _createClass3.default)(AlbumDetals, [{
+  (0, _createClass3.default)(AlbumDetails, [{
     key: 'render',
     value: function render() {
       var props = this.props;
       var data = parseData(props.data); //--point
+      var isVisible = props.isVisible;
+      var style = {
+        display: isVisible ? "block" : "none"
+      };
 
       var fileds = [];
 
@@ -11807,7 +11835,7 @@ var AlbumDetals = function (_Component5) {
 
       return _react2.default.createElement(
         'div',
-        { className: 'detals' },
+        { className: 'detals', style: style },
         _react2.default.createElement(
           'ul',
           null,
@@ -11816,7 +11844,7 @@ var AlbumDetals = function (_Component5) {
       );
     }
   }]);
-  return AlbumDetals;
+  return AlbumDetails;
 }(_react.Component);
 
 var ErrorLoading = function (_Component6) {
