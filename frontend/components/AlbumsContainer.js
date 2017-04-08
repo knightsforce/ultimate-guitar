@@ -18,14 +18,17 @@ export default class AlbumsContainer extends Component {
         break;
 
       case statuses.succ:
+        let albums = [];
+        let list = storeAlbums.list;
 
-        let albums = storeAlbums.list.map((item, i)=>{
-          return (<Album key={item.id} data={item}/>)
-        });
+        for(let key in storeAlbums.list) {
+          albums.push(<Album key={key} data={list[key]}/>)
+        }
+
         visibleElements.push(
           <HeadContainer
             className="head"
-            count={storeAlbums.list.length}
+            count={Object.keys(storeAlbums.list).length}
             queryOneAlbum={props.queryOneAlbum}
           />,
           <listAlbum className="listAlbum" >{albums}</listAlbum>
@@ -90,7 +93,11 @@ class HeadContainer extends Component {
               style={styleButton}
           ></button>
         </div>
-        <SearchField style={styleSearch} queryAlbums={props.queryOneAlbum}/>
+        <SearchField
+          style={styleSearch}
+          queryAlbums={props.queryOneAlbum}
+          placeholder='Введите id (для удаления: "del:id" )'
+        />
       </div>
     );
   }

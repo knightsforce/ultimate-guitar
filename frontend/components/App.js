@@ -12,7 +12,7 @@ import SearchField from "./SearchField";
 let initState = {
 	albums: {
 		status: "empty",
-		list: [],
+		list: {},//id: album
 	},
 }
 
@@ -24,7 +24,10 @@ class App extends Component {
 	let props = this.props;
     return (
       <div className="App">
-    	<SearchField queryAlbums={props.queryAlbums}/>
+    	<SearchField
+    		queryAlbums={props.queryAlbums}
+    		placeholder="Введите название"
+    	/>
       	<AlbumsContainer
       		className="albumsContainer"
       		storeAlbums={this.props.store.albums}

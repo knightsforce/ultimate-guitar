@@ -3141,6 +3141,7 @@ var flags = {
 		getErr: "GET_ERROR",
 
 		add: "ADD_ALBUM",
+		del: "DELETE_ALBUM",
 		/*createSucc: "CREATED_ALBUM",
   createErr: "CREATED_ERROR",*/
 
@@ -4955,7 +4956,7 @@ var groups = {
 var nameGroup = groups.nirvana;
 
 function queryAlbums(text) {
-
+	text = text.trim();
 	return function (dispatch) {
 		$.ajax(createQuery(text), {
 			crossDomain: true,
@@ -4987,12 +4988,20 @@ exports.queryAlbums = queryAlbums;
 
 
 function queryOneAlbum(text) {
-	alert(text);
+	text = text.trim();
 	return function (dispatch) {
+
+		if (text.indexOf("del:") == 0) {
+			text = text.replace(/(del:)(.)/ig, function (str, p1, p2) {
+				return p2;
+			});
+			dispatch(deleteAction(_flags2.default.albums.del, text));
+			return;
+		}
+
 		$.ajax("http://musicbrainz.org/ws/2/release-group/" + text + "?inc=artist-credits&fmt=json", {
 			crossDomain: true,
 			success: function success(data) {
-				console.log("-------------------", data);
 				dispatch(oneAlbumsAction(_flags2.default.albums.add, parseResponse(data, "o")));
 			}, //Пробросить данные
 			error: function error() {
@@ -5042,6 +5051,13 @@ function oneAlbumsAction(flag, data) {
 	};
 }
 
+function deleteAction(flag, data) {
+	return {
+		type: flag,
+		payload: data
+	};
+}
+
 //------------------Рабочие функции
 
 function createQuery(text) {
@@ -5065,9 +5081,11 @@ function parseResponse(jsonObj, flag) {
 }
 
 function parseAlbums(data) {
-	return data["release-groups"].map(function (item, i) {
-		return parseOneAlbum(item);
+	var obj = {};
+	data["release-groups"].forEach(function (item, i) {
+		obj[item.id] = parseOneAlbum(item);
 	});
+	return obj;
 }
 //c9fdb94c-4975-4ed6-a96f-ef6d80bb7738
 function parseOneAlbum(data) {
@@ -11515,8 +11533,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var initState = {
   albums: {
     status: "empty",
-    list: []
-  }
+    list: {} }
 };
 
 var store = (0, _redux.createStore)(_reducers2.default, initState, (0, _redux.applyMiddleware)(_reduxThunk2.default));
@@ -11536,7 +11553,10 @@ var App = function (_Component) {
       return _react2.default.createElement(
         'div',
         { className: 'App' },
-        _react2.default.createElement(_SearchField2.default, { queryAlbums: props.queryAlbums }),
+        _react2.default.createElement(_SearchField2.default, {
+          queryAlbums: props.queryAlbums,
+          placeholder: '\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435'
+        }),
         _react2.default.createElement(_AlbumsContainer2.default, {
           className: 'albumsContainer',
           storeAlbums: this.props.store.albums,
@@ -11623,6 +11643,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _keys = __webpack_require__(626);
+
+var _keys2 = _interopRequireDefault(_keys);
+
 var _getPrototypeOf = __webpack_require__(110);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -11687,13 +11711,16 @@ var AlbumsContainer = function (_Component) {
           break;
 
         case _flags.statuses.succ:
+          var albums = [];
+          var list = storeAlbums.list;
 
-          var albums = storeAlbums.list.map(function (item, i) {
-            return _react2.default.createElement(Album, { key: item.id, data: item });
-          });
+          for (var key in storeAlbums.list) {
+            albums.push(_react2.default.createElement(Album, { key: key, data: list[key] }));
+          }
+
           visibleElements.push(_react2.default.createElement(HeadContainer, {
             className: 'head',
-            count: storeAlbums.list.length,
+            count: (0, _keys2.default)(storeAlbums.list).length,
             queryOneAlbum: props.queryOneAlbum
           }), _react2.default.createElement(
             'listAlbum',
@@ -11780,7 +11807,11 @@ var HeadContainer = function (_Component2) {
             style: styleButton
           })
         ),
-        _react2.default.createElement(_SearchField2.default, { style: styleSearch, queryAlbums: props.queryOneAlbum })
+        _react2.default.createElement(_SearchField2.default, {
+          style: styleSearch,
+          queryAlbums: props.queryOneAlbum,
+          placeholder: '\u0412\u0432\u0435\u0434\u0438\u0442\u0435 id (\u0434\u043B\u044F \u0443\u0434\u0430\u043B\u0435\u043D\u0438\u044F: "del:id" )'
+        })
       );
     }
   }]);
@@ -12097,7 +12128,7 @@ var SearchField = function (_Component) {
     key: 'handleInput',
     value: function handleInput(e) {
       this.value = e.target.value;
-      if (e.key == "Enter") {
+      if (e.key == "Enter" && this.value.length) {
         this.props.queryAlbums(this.value);
       }
     }
@@ -12114,15 +12145,16 @@ var SearchField = function (_Component) {
   }, {
     key: 'handleClick',
     value: function handleClick(e) {
+      if (!this.value.length) return;
       this.props.queryAlbums(this.value);
     }
   }, {
     key: 'render',
     value: function render() {
-
+      var props = this.props;
       return _react2.default.createElement(
         'div',
-        { className: 'search-field', style: this.props.style || null },
+        { className: 'search-field', style: props.style || null },
         _react2.default.createElement(
           'div',
           { className: 'search-input' },
@@ -12130,7 +12162,7 @@ var SearchField = function (_Component) {
             onKeyPress: this.handleInput,
             onPaste: this.handlePaste,
             onCut: this.handleCut,
-            placeholder: '\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435'
+            placeholder: props.placeholder || null
           })
         ),
         _react2.default.createElement('div', { className: 'button-search', onClick: this.handleClick })
@@ -12188,6 +12220,7 @@ function albums() {
 	var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	var action = arguments[1];
 
+	var list = null;
 	switch (action.type) {
 		case _flags2.default.albums.getInit:
 
@@ -12198,9 +12231,20 @@ function albums() {
 
 			break;
 		case _flags2.default.albums.add:
-			return (0, _assign2.default)({}, state, {
-				list: state.list.concat(action.payload)
-			});
+			var elem = {};
+			list = (0, _assign2.default)({}, state.list);
+
+			list[action.payload.id] = action.payload;
+
+			return (0, _assign2.default)({}, state, { list: list });
+			break;
+
+		case _flags2.default.albums.del:
+			list = (0, _assign2.default)({}, state.list);
+			if (list[action.payload]) delete list[action.payload];
+			return (0, _assign2.default)({}, state, { list: list });
+			break;
+
 		default:
 			return state;
 	}
@@ -26748,6 +26792,48 @@ module.exports = function(module) {
 	return module;
 };
 
+
+/***/ }),
+/* 611 */,
+/* 612 */,
+/* 613 */,
+/* 614 */,
+/* 615 */,
+/* 616 */,
+/* 617 */,
+/* 618 */,
+/* 619 */,
+/* 620 */,
+/* 621 */,
+/* 622 */,
+/* 623 */,
+/* 624 */,
+/* 625 */,
+/* 626 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = { "default": __webpack_require__(627), __esModule: true };
+
+/***/ }),
+/* 627 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(628);
+module.exports = __webpack_require__(36).Object.keys;
+
+/***/ }),
+/* 628 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.14 Object.keys(O)
+var toObject = __webpack_require__(125)
+  , $keys    = __webpack_require__(80);
+
+__webpack_require__(291)('keys', function(){
+  return function keys(it){
+    return $keys(toObject(it));
+  };
+});
 
 /***/ })
 /******/ ]);

@@ -6,6 +6,7 @@ const flags = {
 		getErr: "GET_ERROR",
 
 		add: "ADD_ALBUM",
+		del: "DELETE_ALBUM",
 		/*createSucc: "CREATED_ALBUM",
 		createErr: "CREATED_ERROR",*/
 

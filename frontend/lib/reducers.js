@@ -21,6 +21,7 @@ const flags = {
 */
 
 function albums(state={}, action) {
+	let list=null;
 	switch(action.type) {
 		case flags.albums.getInit:
 
@@ -30,12 +31,21 @@ function albums(state={}, action) {
 			return Object.assign({}, state, action.payload);
 
 			break;
-		case flags.albums.add: 
-			return Object.assign({}, state,
-					{
-						list: state.list.concat(action.payload)
-					}
-				);
+		case flags.albums.add:
+			let elem = {};
+			list = Object.assign({}, state.list);
+			
+			list[action.payload.id]=action.payload;
+			
+			return Object.assign({}, state, {list: list});
+			break;
+
+		case flags.albums.del:
+			list = Object.assign({}, state.list);
+			if(list[action.payload]) delete list[action.payload];
+			return Object.assign({}, state, {list: list});
+			break;
+
 		default:
 			return state;
 	}

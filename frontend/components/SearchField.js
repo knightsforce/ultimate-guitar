@@ -14,7 +14,7 @@ export default class SearchField extends Component {
 
   handleInput(e) {
     this.value=e.target.value;
-    if(e.key=="Enter") {
+    if(e.key=="Enter" && this.value.length) {
       this.props.queryAlbums(this.value);
     }
   }
@@ -28,19 +28,20 @@ export default class SearchField extends Component {
   }
 
   handleClick(e) {
+    if(!this.value.length) return;
     this.props.queryAlbums(this.value);
   }
 
   render() {
-
+    let props = this.props;
     return (
-      <div className="search-field" style={this.props.style || null}>
+      <div className="search-field" style={props.style || null}>
         <div className="search-input">
           <input
             onKeyPress={this.handleInput}
             onPaste={this.handlePaste}
             onCut={this.handleCut}
-            placeholder="Введите название"
+            placeholder={props.placeholder || null}
           />
         </div>
         <div className="button-search" onClick={this.handleClick}></div>

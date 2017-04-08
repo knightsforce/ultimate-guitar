@@ -8,7 +8,7 @@ let nameGroup = groups.nirvana;
 
 
 function queryAlbums(text) {
-
+	text=text.trim();
 	return (dispatch)=>{
 		$.ajax(createQuery(text), {
 			crossDomain: true,
@@ -42,12 +42,20 @@ function queryAlbums(text) {
 export {queryAlbums};
 
 function queryOneAlbum(text) {
-alert(text)
+	text=text.trim();
 	return (dispatch)=>{
+
+		if(text.indexOf("del:")==0) {
+			text=text.replace(/(del:)(.)/ig, (str, p1, p2)=>{
+				return p2;
+			});
+			dispatch(deleteAction(flags.albums.del, text));
+			return;
+		}
+
 		$.ajax(`http://musicbrainz.org/ws/2/release-group/${text}?inc=artist-credits&fmt=json`, {
 			crossDomain: true,
 			success: (data)=>{
-				console.log("-------------------", data);
 				dispatch(oneAlbumsAction(flags.albums.add, parseResponse(data, "o")));
 			},//Пробросить данные
 			error: ()=>{
@@ -96,6 +104,13 @@ function oneAlbumsAction(flag, data) {
 		};
 }
 
+function deleteAction(flag, data) {
+	return {
+			type: flag,
+			payload: data
+		};
+}
+
 //------------------Рабочие функции
 
 function createQuery(text) {
@@ -120,9 +135,11 @@ function parseResponse(jsonObj, flag) {
 }
 
 function parseAlbums(data) {
-	return data["release-groups"].map((item, i)=>{
-		return parseOneAlbum(item);
+	let obj = {};
+	data["release-groups"].forEach((item, i)=>{
+		obj[item.id]=parseOneAlbum(item);
     });
+    return obj;
 }
 //c9fdb94c-4975-4ed6-a96f-ef6d80bb7738
 function parseOneAlbum(data) {
