@@ -15,10 +15,12 @@ body {
   width: 60%; }
   @media screen and (max-width: 800px) {
     .App {
-      width: 80%; } }
+      width: 80%;
+      left: 20%; } }
   @media screen and (max-width: 550px) {
     .App {
-      width: 500px; } }
+      width: 500px;
+      left: 10%; } }
   .App .search-field {
     display: flex;
     flex-direction: flow;
@@ -38,12 +40,18 @@ body {
         padding-left: 1%;
         border: none; }
     .App .search-field .button-search {
-      width: 15%;
+      width: 10%;
       height: 100%;
       background: url(../images/icons/search.png) no-repeat;
       background-size: 70% 80%;
       background-position: center center;
       cursor: pointer; }
+      @media screen and (max-width: 800px) {
+        .App .search-field .button-search {
+          width: 15%; } }
+      @media screen and (max-width: 550px) {
+        .App .search-field .button-search {
+          width: 15%; } }
   .App .albumsContainer {
     width: 50%;
     height: 300px;

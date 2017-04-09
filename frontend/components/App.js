@@ -7,14 +7,26 @@ import flags from "../lib/flags";
 import thunk from 'redux-thunk';
 import AlbumsContainer from "./AlbumsContainer";
 import SearchField from "./SearchField";
-//alert(actions.getAlbum);
-//import './App.css';
+
 let initState = {
 	albums: {
 		status: "empty",
-		list: {},//id: album
+		list: {},
 	},
 }
+/*
+Структура state:
+
+albums: {
+	status: "empty",
+	list: {
+		id: id,
+		title: title:
+		artist: artist
+	},
+},
+*/
+
 
 const store = createStore(rootReducer, initState, applyMiddleware(thunk));
 

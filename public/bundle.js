@@ -3148,15 +3148,12 @@ Object.defineProperty(exports, "__esModule", {
 var flags = {
 	albums: {
 		getInit: "GET_INIT",
-		//getComplete: "GET_COMPLETE",
 		getSucc: "GET_SUCCESSFUL",
 		getErr: "GET_ERROR",
 
 		add: "ADD_ALBUM",
 		del: "DELETE_ALBUM",
 		delAll: "DELETE_ALL_ALBUM",
-		/*createSucc: "CREATED_ALBUM",
-  createErr: "CREATED_ERROR",*/
 
 		save: "SAVE_ALBUM",
 		saveSucc: "SAVE_ALBUM_COMPLITE",
@@ -4961,11 +4958,10 @@ var _flags2 = _interopRequireDefault(_flags);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var groups = {
-	metallica: "metallica"
-};
-var nameGroup = groups.nirvana;
-
+/*
+	Если пустое поле ввода и запрос - то все очищается список альбомов,
+	работает только с главным поиском, второй input просто ничего не делает
+*/
 function queryAlbums(text) {
 	return function (dispatch) {
 
@@ -4976,7 +4972,7 @@ function queryAlbums(text) {
 
 		text = text.trim();
 
-		$.ajax(createQuery(text), {
+		$.ajax(createQuery(text, "m"), {
 			crossDomain: true,
 			beforeSend: function beforeSend() {
 				dispatch(albumsAction(_flags2.default.albums.getInit, {}));
@@ -4993,12 +4989,9 @@ function queryAlbums(text) {
 
 			cache: false
 		});
-		/*new Promise((resolve, reject) => {
-  
-  		}).then(result=>{
-  
-  }).catch(err=>{
-  		});*/
+		/*
+  	Промисы использовать не стал, т.к. и без них контролируется процесс
+  */
 	};
 }
 
@@ -5019,7 +5012,7 @@ function queryOneAlbum(text) {
 			return;
 		}
 
-		$.ajax("http://musicbrainz.org/ws/2/release-group/" + text + "?inc=artist-credits&fmt=json", {
+		$.ajax(createQuery(text, "o"), {
 			crossDomain: true,
 			success: function success(data) {
 				dispatch(oneAlbumsAction(_flags2.default.albums.add, parseResponse(data, "o")));
@@ -5086,11 +5079,20 @@ function deleteAllAlbums(flag) {
 
 //------------------Рабочие функции
 
-function createQuery(text) {
-	return "http://musicbrainz.org/ws/2/release-group/?query=" + text + "&fmt=json";
+function createQuery(text, f) {
+	//Создать нужный запрос, multi или one
+	switch (f.toLowerCase()) {
+		case "m":
+			return "http://musicbrainz.org/ws/2/release-group/?query=" + text + "&fmt=json";
+			break;
+		case "o":
+			return "http://musicbrainz.org/ws/2/release-group/" + text + "?inc=artist-credits&fmt=json";
+			break;
+	}
 }
 
 function parseResponse(jsonObj, flag) {
+	//Парсю ответ
 	flag = flag.toLowerCase();
 	var obj = {};
 
@@ -5107,14 +5109,16 @@ function parseResponse(jsonObj, flag) {
 }
 
 function parseAlbums(data) {
+	//Парсю много альбомов
 	var obj = {};
 	data["release-groups"].forEach(function (item, i) {
 		obj[item.id] = parseOneAlbum(item);
 	});
 	return obj;
 }
-//c9fdb94c-4975-4ed6-a96f-ef6d80bb7738
+
 function parseOneAlbum(data) {
+	//парсю один альбом
 
 	var postfix = data["artist-credit"].length > 1 ? "; " : "";
 	var artists = data["artist-credit"].map(function (item) {
@@ -7785,6 +7789,9 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/*
+  Поле поиска - используется в двух местах
+*/
 var SearchField = function (_Component) {
   (0, _inherits3.default)(SearchField, _Component);
 
@@ -11605,7 +11612,7 @@ function warning(message) {
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+	value: true
 });
 exports.store = undefined;
 
@@ -11665,59 +11672,70 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//alert(actions.getAlbum);
-//import './App.css';
 var initState = {
-  albums: {
-    status: "empty",
-    list: {} }
+	albums: {
+		status: "empty",
+		list: {}
+	}
 };
+/*
+Структура state:
+
+albums: {
+	status: "empty",
+	list: {
+		id: id,
+		title: title:
+		artist: artist
+	},
+},
+*/
 
 var store = (0, _redux.createStore)(_reducers2.default, initState, (0, _redux.applyMiddleware)(_reduxThunk2.default));
 
 var App = function (_Component) {
-  (0, _inherits3.default)(App, _Component);
+	(0, _inherits3.default)(App, _Component);
 
-  function App() {
-    (0, _classCallCheck3.default)(this, App);
-    return (0, _possibleConstructorReturn3.default)(this, (App.__proto__ || (0, _getPrototypeOf2.default)(App)).apply(this, arguments));
-  }
+	function App() {
+		(0, _classCallCheck3.default)(this, App);
+		return (0, _possibleConstructorReturn3.default)(this, (App.__proto__ || (0, _getPrototypeOf2.default)(App)).apply(this, arguments));
+	}
 
-  (0, _createClass3.default)(App, [{
-    key: 'render',
-    value: function render() {
-      var props = this.props;
-      return _react2.default.createElement(
-        'div',
-        { className: 'App' },
-        _react2.default.createElement(_SearchField2.default, {
-          queryAlbums: props.queryAlbums,
-          placeholder: '\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435'
-        }),
-        _react2.default.createElement(_AlbumsContainer2.default, {
-          className: 'albumsContainer',
-          storeAlbums: this.props.store.albums,
-          queryOneAlbum: props.queryOneAlbum
-        })
-      );
-    }
-  }]);
-  return App;
+	(0, _createClass3.default)(App, [{
+		key: 'render',
+		value: function render() {
+			var props = this.props;
+			return _react2.default.createElement(
+				'div',
+				{ className: 'App' },
+				_react2.default.createElement(_SearchField2.default, {
+					queryAlbums: props.queryAlbums,
+					placeholder: '\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435'
+				}),
+				_react2.default.createElement(_AlbumsContainer2.default, {
+					className: 'albumsContainer',
+					storeAlbums: this.props.store.albums,
+					queryOneAlbum: props.queryOneAlbum
+				})
+			);
+		}
+	}]);
+	return App;
 }(_react.Component);
 
 function mapStateToProps(state) {
-  return { store: state };
+	return { store: state };
 }
 
 function mapDispatchToProps(dispatch) {
-  return {
-    queryAlbums: function queryAlbums(text) {
-      dispatch(actions.queryAlbums(text));
-    },
-    queryOneAlbum: function queryOneAlbum(text) {
-      dispatch(actions.queryOneAlbum(text));
-    }
-  };
+	return {
+		queryAlbums: function queryAlbums(text) {
+			dispatch(actions.queryAlbums(text));
+		},
+		queryOneAlbum: function queryOneAlbum(text) {
+			dispatch(actions.queryOneAlbum(text));
+		}
+	};
 }
 
 //----------------------------------
@@ -11759,10 +11777,6 @@ var _App2 = _interopRequireDefault(_App);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/*
-	Использовать Reales groub
-*/
-//import 'babel-polyfill'
 (0, _reactDom.render)(_react2.default.createElement(
 	_reactRedux.Provider,
 	{ store: _App.store },
@@ -11828,6 +11842,10 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/*
+Компонент с альбомами и все связанные с ним
+*/
+
 var AlbumsContainer = function (_Component) {
   (0, _inherits3.default)(AlbumsContainer, _Component);
 
@@ -11845,7 +11863,8 @@ var AlbumsContainer = function (_Component) {
     value: function render() {
       var props = this.props;
       var storeAlbums = props.storeAlbums;
-      var visibleElements = [];
+      var visibleElements = []; // В зависимости от статуса запроса здесь будут определенные элементы
+
       switch (storeAlbums.status) {
         case _flags.statuses.load:
           visibleElements.push(_react2.default.createElement(AlbumsLoading, null));
@@ -11873,10 +11892,6 @@ var AlbumsContainer = function (_Component) {
         case _flags.statuses.err:
           visibleElements.push(_react2.default.createElement(ErrorLoading, { text: '\u041E\u0448\u0438\u0431\u043A\u0430 \u0437\u0430\u0433\u0440\u0443\u0437\u043A\u0438' }));
           break;
-
-        default:
-
-          break;
       }
 
       return _react2.default.createElement(
@@ -11894,6 +11909,9 @@ exports.default = AlbumsContainer;
 var HeadContainer = function (_Component2) {
   (0, _inherits3.default)(HeadContainer, _Component2);
 
+  /*
+    Черная шапка с информацией о том сколько получено альбомов (именно получено, чсчитал от length)
+  */
   function HeadContainer(props) {
     (0, _classCallCheck3.default)(this, HeadContainer);
 
@@ -11962,6 +11980,9 @@ var HeadContainer = function (_Component2) {
 var listAlbum = function (_Component3) {
   (0, _inherits3.default)(listAlbum, _Component3);
 
+  /*
+    Список альбомов
+  */
   function listAlbum(props) {
     (0, _classCallCheck3.default)(this, listAlbum);
 
@@ -11988,6 +12009,9 @@ var listAlbum = function (_Component3) {
 var Album = function (_Component4) {
   (0, _inherits3.default)(Album, _Component4);
 
+  /*
+    Оин альбом
+  */
   function Album(props) {
     (0, _classCallCheck3.default)(this, Album);
 
@@ -12027,6 +12051,7 @@ var Album = function (_Component4) {
       this.setState(function (prevState) {
         return { "saveInStorage": !prevState.saveInStorage };
       }, function () {
+        //Вызывается когда state изменился
         switch (_this5.state.saveInStorage) {
           case true:
             var value = (0, _stringify2.default)(_this5.props.data);
@@ -12074,6 +12099,9 @@ var Album = function (_Component4) {
 var BasicInformation = function (_Component5) {
   (0, _inherits3.default)(BasicInformation, _Component5);
 
+  /*
+    Базовая информация о альбоме
+  */
   function BasicInformation(props) {
     (0, _classCallCheck3.default)(this, BasicInformation);
 
@@ -12092,6 +12120,11 @@ var BasicInformation = function (_Component5) {
       var style = {
         transform: isVisible ? null : "rotate(90deg)"
       };
+      /*
+        1 кнопка показать или спрятать детальную информацию.
+        2 добавить альбом в хранилище.
+        3 удалить - равноценно удалению по id, даже функция используется та же, просто по клику
+      */
       return _react2.default.createElement(
         'div',
         { className: 'basic-information' },
@@ -12129,6 +12162,9 @@ var BasicInformation = function (_Component5) {
 var AlbumDetails = function (_Component6) {
   (0, _inherits3.default)(AlbumDetails, _Component6);
 
+  /*
+    Подробные данные о альбоме
+  */
   function AlbumDetails(props) {
     (0, _classCallCheck3.default)(this, AlbumDetails);
 
@@ -12184,6 +12220,9 @@ var AlbumDetails = function (_Component6) {
 var ErrorLoading = function (_Component7) {
   (0, _inherits3.default)(ErrorLoading, _Component7);
 
+  /*
+    Появляется при ошибки запроса
+  */
   function ErrorLoading(props) {
     (0, _classCallCheck3.default)(this, ErrorLoading);
 
@@ -12214,6 +12253,9 @@ var ErrorLoading = function (_Component7) {
 var AlbumsLoading = function (_Component8) {
   (0, _inherits3.default)(AlbumsLoading, _Component8);
 
+  /*
+    Появляется при выполнении запроса
+  */
   function AlbumsLoading(props) {
     (0, _classCallCheck3.default)(this, AlbumsLoading);
 
@@ -12236,21 +12278,6 @@ var AlbumsLoading = function (_Component8) {
   }]);
   return AlbumsLoading;
 }(_react.Component);
-
-//----------------------Рабочие функции
-
-/*function parseData(data) {
-  let postfix = (data["artist-credit"].length>1) ? "; " : "";
-  let artists = data["artist-credit"].map((item)=>{
-    return item.artist.name
-  }).join(postfix);
-  
-  return {
-    id: data.id,
-    artist: artists,
-    title: data.title
-  }
-}*/
 
 /***/ }),
 /* 264 */

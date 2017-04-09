@@ -1,12 +1,10 @@
 import flags, {statuses} from "../lib/flags";
 
-let groups = {
-	metallica: "metallica",
-}
-let nameGroup = groups.nirvana;
 
-
-
+/*
+	Если пустое поле ввода и запрос - то все очищается список альбомов,
+	работает только с главным поиском, второй input просто ничего не делает
+*/
 function queryAlbums(text) {
 	return (dispatch)=>{
 		
@@ -17,7 +15,7 @@ function queryAlbums(text) {
 		
 		text=text.trim();
 
-		$.ajax(createQuery(text), {
+		$.ajax(createQuery(text, "m"), {
 			crossDomain: true,
 			beforeSend: ()=>{
 				dispatch(albumsAction(flags.albums.getInit, {}));
@@ -34,15 +32,9 @@ function queryAlbums(text) {
 
 			cache: false,
 		});
-		/*new Promise((resolve, reject) => {
-
-
-
-		}).then(result=>{
-		
-		}).catch(err=>{
-
-		});*/
+		/*
+			Промисы использовать не стал, т.к. и без них контролируется процесс
+		*/
 	}
 }
 
@@ -62,7 +54,7 @@ function queryOneAlbum(text) {
 			return;
 		}
 
-		$.ajax(`http://musicbrainz.org/ws/2/release-group/${text}?inc=artist-credits&fmt=json`, {
+		$.ajax(createQuery(text, "o"), {
 			crossDomain: true,
 			success: (data)=>{
 				dispatch(oneAlbumsAction(flags.albums.add, parseResponse(data, "o")));
@@ -128,12 +120,18 @@ function deleteAllAlbums(flag) {
 
 //------------------Рабочие функции
 
-function createQuery(text) {
-	return `http://musicbrainz.org/ws/2/release-group/?query=${text}&fmt=json`;
-	
+function createQuery(text, f) {//Создать нужный запрос, multi или one
+	switch(f.toLowerCase()) {
+		case "m":
+			return `http://musicbrainz.org/ws/2/release-group/?query=${text}&fmt=json`;
+			break;
+		case "o":
+			return `http://musicbrainz.org/ws/2/release-group/${text}?inc=artist-credits&fmt=json`
+			break;
+	}
 }
 
-function parseResponse(jsonObj, flag) {
+function parseResponse(jsonObj, flag) {//Парсю ответ
 	flag=flag.toLowerCase();
 	let obj = {};
 
@@ -149,15 +147,15 @@ function parseResponse(jsonObj, flag) {
 	return obj;
 }
 
-function parseAlbums(data) {
+function parseAlbums(data) {//Парсю много альбомов
 	let obj = {};
 	data["release-groups"].forEach((item, i)=>{
 		obj[item.id]=parseOneAlbum(item);
     });
     return obj;
 }
-//c9fdb94c-4975-4ed6-a96f-ef6d80bb7738
-function parseOneAlbum(data) {
+
+function parseOneAlbum(data) {//парсю один альбом
 
 	let postfix = (data["artist-credit"].length>1) ? "; " : "";
 	let artists = data["artist-credit"].map((item)=>{

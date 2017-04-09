@@ -3,6 +3,10 @@ import * as actions from '../lib/actions';
 import flags, {statuses} from "../lib/flags";
 import SearchField from "./SearchField";
 
+/*
+Компонент с альбомами и все связанные с ним
+*/
+
 export default class AlbumsContainer extends Component {
   constructor(props) {
     super(props);
@@ -11,7 +15,8 @@ export default class AlbumsContainer extends Component {
   render() {
     let props = this.props;
     let storeAlbums = props.storeAlbums;
-    let visibleElements = [];
+    let visibleElements = [];// В зависимости от статуса запроса здесь будут определенные элементы
+
     switch(storeAlbums.status) {
       case statuses.load:
         visibleElements.push(<AlbumsLoading/>);
@@ -38,10 +43,6 @@ export default class AlbumsContainer extends Component {
       case statuses.err:
         visibleElements.push(<ErrorLoading text="Ошибка загрузки"/>);
         break;
-
-      default:
-        
-        break;
     }
     
     return (
@@ -55,6 +56,9 @@ export default class AlbumsContainer extends Component {
 
 
 class HeadContainer extends Component {
+  /*
+    Черная шапка с информацией о том сколько получено альбомов (именно получено, чсчитал от length)
+  */
   constructor(props) {
     super(props);
     this.props=props;
@@ -104,6 +108,9 @@ class HeadContainer extends Component {
 }
 
 class listAlbum extends Component {
+  /*
+    Список альбомов
+  */
   constructor(props) {
     super(props);
     this.props=props;
@@ -119,6 +126,9 @@ class listAlbum extends Component {
 }
 
 class Album extends Component {
+  /*
+    Оин альбом
+  */
   constructor(props) {
     super(props);
     this.props=props;
@@ -150,7 +160,7 @@ class Album extends Component {
       (prevState)=>{   
           return {"saveInStorage": !prevState.saveInStorage};
       },
-      ()=>{
+      ()=>{//Вызывается когда state изменился
         switch(this.state.saveInStorage) {
           case true:
             let value = JSON.stringify(this.props.data);
@@ -193,6 +203,9 @@ class Album extends Component {
 }
 
 class BasicInformation extends Component {
+  /*
+    Базовая информация о альбоме
+  */
   constructor(props) {
     super(props);
     this.props=props;
@@ -205,6 +218,11 @@ class BasicInformation extends Component {
     let style = {
       transform: ((isVisible) ? null : "rotate(90deg)")
     };
+    /*
+      1 кнопка показать или спрятать детальную информацию.
+      2 добавить альбом в хранилище.
+      3 удалить - равноценно удалению по id, даже функция используется та же, просто по клику
+    */
     return (
       <div className="basic-information">
         <div className="name-album">{data.title}</div>
@@ -232,6 +250,9 @@ class BasicInformation extends Component {
 }
 
 class AlbumDetails extends Component {
+  /*
+    Подробные данные о альбоме
+  */
   constructor(props) {
     super(props);
     this.props=props;
@@ -270,6 +291,9 @@ class AlbumDetails extends Component {
 }
 
 class ErrorLoading extends Component {
+  /*
+    Появляется при ошибки запроса
+  */
   constructor(props) {
     super(props);
     this.props=props;
@@ -285,6 +309,9 @@ class ErrorLoading extends Component {
 }
 
 class AlbumsLoading extends Component {
+  /*
+    Появляется при выполнении запроса
+  */
   constructor(props) {
     super(props);
     this.props=props;
@@ -298,21 +325,3 @@ class AlbumsLoading extends Component {
     );
   }
 }
-
-
-
-
-//----------------------Рабочие функции
-
-/*function parseData(data) {
-  let postfix = (data["artist-credit"].length>1) ? "; " : "";
-  let artists = data["artist-credit"].map((item)=>{
-    return item.artist.name
-  }).join(postfix);
-  
-  return {
-    id: data.id,
-    artist: artists,
-    title: data.title
-  }
-}*/

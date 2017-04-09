@@ -37,10 +37,12 @@ body {
 
 	@media screen and (max-width: 800px) {
 		width: 80%;
+		left: 20%;
 	}
 
 	@media screen and (max-width: 550px) {
 		width: 500px;
+		left: 10%;
 	}
 
 	.search-field {
@@ -64,10 +66,17 @@ body {
 			}
 		}
 		.button-search {
-			width: 15%;
+			width: 10%;
 			height: 100%;
 			background: url(../images/icons/search.png) no-repeat;
 			@include backgroundImageOptions(70%, 80%, center, center);
+			@media screen and (max-width: 800px) {
+				width: 15%;
+			}
+
+			@media screen and (max-width: 550px) {
+				width: 15%;
+			}
 		}
 
 	}
@@ -136,7 +145,6 @@ body {
 		}
 
 		.listAlbum {
-			//border: 1px solid red;
 			position: relative;
 			width: 50%;
 			height: 300px;
@@ -189,10 +197,7 @@ body {
 					ul {
 						padding: 10px 5px;
 						list-style: none;
-						//background-color: rgb(0,0,0);
-						//color: rgb(255,255,255);
 						li {
-							//border-bottom: 1px solid rgb(0,0,0);
 							padding-bottom: 5px;
 							span {
 								&:first-child {

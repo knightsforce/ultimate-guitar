@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import * as actions from '../lib/actions';
 import flags from "../lib/flags";
-
+/*
+  Поле поиска - используется в двух местах
+*/
 export default class SearchField extends Component {
   constructor(props) {
     super(props);
