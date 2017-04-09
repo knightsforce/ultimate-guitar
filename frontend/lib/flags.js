@@ -7,6 +7,7 @@ const flags = {
 
 		add: "ADD_ALBUM",
 		del: "DELETE_ALBUM",
+		delAll: "DELETE_ALL_ALBUM",
 		/*createSucc: "CREATED_ALBUM",
 		createErr: "CREATED_ERROR",*/
 

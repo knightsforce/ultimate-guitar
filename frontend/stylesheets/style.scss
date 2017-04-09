@@ -35,6 +35,14 @@ body {
 	left: 30%;
 	width: 60%;
 
+	@media screen and (max-width: 800px) {
+		width: 80%;
+	}
+
+	@media screen and (max-width: 550px) {
+		width: 500px;
+	}
+
 	.search-field {
 		display: flex;
 		flex-direction: flow;
@@ -152,7 +160,7 @@ body {
 						justify-content: flex-start;
 						button {
 							padding: 10px;
-							margin-right: 5px;
+							margin-right: 10px;
 							border: none;
 						}
 						.show-details {
@@ -167,7 +175,7 @@ body {
 							background: url(../images/icons/checkAdd.png) no-repeat;
 							@include backgroundImageOptions(100%, 100%, center, center);
 							&.complete {
-								background: url(../images/icons/checkAdded.png) no-repeat;
+								background-image: url(../images/icons/checkAdded.png);
 							}
 						}
 						.delete-album {

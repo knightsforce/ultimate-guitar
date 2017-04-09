@@ -46,6 +46,10 @@ function albums(state={}, action) {
 			return Object.assign({}, state, {list: list});
 			break;
 
+		case flags.albums.delAll:
+			return {};
+			break;
+
 		default:
 			return state;
 	}

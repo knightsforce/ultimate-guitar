@@ -22,7 +22,7 @@ export default class AlbumsContainer extends Component {
         let list = storeAlbums.list;
 
         for(let key in storeAlbums.list) {
-          albums.push(<Album key={key} data={list[key]}/>)
+          albums.push(<Album key={key} data={list[key]} handleDelete={props.queryOneAlbum}/>)
         }
 
         visibleElements.push(
@@ -96,7 +96,7 @@ class HeadContainer extends Component {
         <SearchField
           style={styleSearch}
           queryAlbums={props.queryOneAlbum}
-          placeholder='Введите id (для удаления: "del:id" )'
+          placeholder='Введите id (для удаления: "del:id")'
         />
       </div>
     );
@@ -122,10 +122,15 @@ class Album extends Component {
   constructor(props) {
     super(props);
     this.props=props;
-  
+    this.id=props.data.id;
+
     this.handleVisible = this.handleVisible.bind(this);
+    this.manageLocalStorage = this.manageLocalStorage.bind(this);
+    this.deleteElement = this.deleteElement.bind(this);
+
     this.state={
       visibleDetails: false,
+      saveInStorage: (this.id in window.localStorage),
     };
   }
  
@@ -140,14 +145,48 @@ class Album extends Component {
     });
   }
 
+  manageLocalStorage() {
+    this.setState(
+      (prevState)=>{   
+          return {"saveInStorage": !prevState.saveInStorage};
+      },
+      ()=>{
+        switch(this.state.saveInStorage) {
+          case true:
+            let value = JSON.stringify(this.props.data);
+            window.localStorage.setItem(this.id, value);
+            break;
+          case false:
+            window.localStorage.removeItem(this.id);
+            break;
+        }
+      }
+    );
+  }
+
+  deleteElement() {
+    this.props.handleDelete(`del:${this.id}`);
+  }
+
   render() {
     let props = this.props;
     let data = props.data;
     let isVisible = this.state.visibleDetails;
+    let saveInStorage = this.state.saveInStorage;
     return (
       <div className="album">
-        <BasicInformation data={{title: data.title}} clickDetailsButton={this.handleVisible} isVisible={isVisible}/>
-        <AlbumDetails data={data} isVisible={isVisible} />
+        <BasicInformation
+            data={{title: data.title}}
+            clickDetailsButton={this.handleVisible}
+            clickAdd={this.manageLocalStorage}
+            clickDelete={this.deleteElement}
+            isVisible={isVisible}
+            saveInStorage={saveInStorage}
+        />
+        <AlbumDetails
+            data={data}
+            isVisible={isVisible}
+        />
       </div>
     );
   }
@@ -170,12 +209,22 @@ class BasicInformation extends Component {
       <div className="basic-information">
         <div className="name-album">{data.title}</div>
         <div className="buttons-block">
-          <button type="button" className="show-details" 
+          <button 
+              type="button"
+              className="show-details" 
               onClick={props.clickDetailsButton}
               style={style}
           />
-          <button type="button" className="add-album"/>
-          <button type="button" className="delete-album"/>
+          <button
+              type="button"
+              className={`add-album${((props.saveInStorage) ? " complete": "")}`}
+              onClick={props.clickAdd}
+          />
+          <button
+              type="button"
+              className={"delete-album"}
+              onClick={props.clickDelete}
+          />
         </div>
       </div>
     );

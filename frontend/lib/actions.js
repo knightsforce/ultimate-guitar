@@ -8,8 +8,15 @@ let nameGroup = groups.nirvana;
 
 
 function queryAlbums(text) {
-	text=text.trim();
 	return (dispatch)=>{
+		
+		if(!text.length) {
+			dispatch(deleteAllAlbums(flags.albums.delAll));
+			return;
+		}
+		
+		text=text.trim();
+
 		$.ajax(createQuery(text), {
 			crossDomain: true,
 			beforeSend: ()=>{
@@ -44,8 +51,10 @@ export {queryAlbums};
 function queryOneAlbum(text) {
 	text=text.trim();
 	return (dispatch)=>{
-
-		if(text.indexOf("del:")==0) {
+		
+		if(!text.length) {
+			return;
+		} else if(text.indexOf("del:")==0) {
 			text=text.replace(/(del:)(.)/ig, (str, p1, p2)=>{
 				return p2;
 			});
@@ -108,6 +117,12 @@ function deleteAction(flag, data) {
 	return {
 			type: flag,
 			payload: data
+		};
+}
+
+function deleteAllAlbums(flag) {
+	return {
+			type: flag,
 		};
 }
 
